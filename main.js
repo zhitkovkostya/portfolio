@@ -5,41 +5,44 @@
 
     document.addEventListener('DOMContentLoaded', onDocumentReady);
 
-    window.addEventListener('scroll', throttle(onWindowScroll));
-
-    function throttle(func, wait) {
-        var wait = wait || 100,
-            timer = null;
-
-        return function(...args) {
-            if (timer === null) {
-                timer = setTimeout(() => {
-                    func.apply(this, args);
-                    timer = null;
-                }, wait);
-            }
-        };
-    }
-
     function onDocumentReady() {
-        var postElements = document.querySelectorAll('.js-post');
+        var pageElement = document.querySelector('.js-page');
 
-        blog = new Blog(postElements);
-
-        onWindowScroll();
+        blog = new Blog(pageElement);
     }
 
-    function onWindowScroll(event) {
+    function Blog(pageElement) {
+        var me = this,
+            postElements = pageElement.querySelectorAll('.js-post');
+
+        this.element = pageElement;
+        this.posts = this.createPostCollection(postElements);
+
+        this.onResize();
+        this.onScroll();
+
+        window.addEventListener('resize', function() {
+            window.requestAnimationFrame(me.onResize.bind(me))
+        });
+        window.addEventListener('scroll', function() {
+            window.requestAnimationFrame(me.onScroll.bind(me))
+        });
+    }
+
+    Blog.prototype.onResize = function() {
+        var scrollPosition = this.getScrollPosition();
+
+        if (scrollPosition <= 0) {
+            this.setScrollPosition(1); // Scroll 1 pixel to allow upwards scrolling
+        }
+    };
+
+    Blog.prototype.onScroll = function() {
         var root = document.documentElement,
-            scrollPosition = window.scrollY,
-            visiblePost = blog.getVisiblePost(scrollPosition);
+            visiblePost = this.getVisiblePost();
 
         root.style.setProperty('--background-color', visiblePost.color);
-    }
-
-    function Blog(postElements) {
-        this.posts = this.createPostCollection(postElements);
-    }
+    };
 
     Blog.prototype.createPostCollection = function(postElements) {
         return Array.from(postElements).map(this.createPostModel);
@@ -55,12 +58,16 @@
         });
     };
 
-    Blog.prototype.getVisiblePost = function(scrollPosition) {
-        var viewportCenterPosition = scrollPosition + (window.outerHeight / 1.5),
+    Blog.prototype.getVisiblePost = function() {
+        var scrollPosition = this.getScrollPosition(),
+            viewportCenterPosition = scrollPosition + (window.outerHeight / 1.5),
             posts = this.posts,
             postsCount = posts.length,
             index = 0,
             post, visiblePost;
+
+        // TODO: remove
+        this.element.dataset.scrollPosition = scrollPosition;
 
         while (!visiblePost && index < postsCount) {
             post = posts[index];
@@ -73,6 +80,14 @@
         }
 
         return visiblePost;
+    };
+
+    Blog.prototype.getScrollPosition = function() {
+        return window.scrollY;
+    };
+
+    Blog.prototype.setScrollPosition = function(position) {
+        window.scrollTo({top: position});
     };
 
     function Post(data) {

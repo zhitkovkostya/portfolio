@@ -63,6 +63,7 @@ body {
     font-family: var(--font-family);
     font-size: var(--font-size-large);
     font-weight: var(--font-weight-bold);
+    text-transform: uppercase;
     line-height: var(--font-height-large);
 }
 
@@ -128,7 +129,7 @@ body {
 .nav {
     display: flex;
     height: 2rem;
-    margin: 0;
+    margin: 0 0 8rem 0;
     padding: 0;
     list-style: none;
 }
