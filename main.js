@@ -21,7 +21,7 @@
         this._scrollPosition = 0;
         this._scrollHeight = 0;
         this._clonedPostsHeight = 0;
-        // this._isScrollDisabled = false;
+        this._isScrollDisabled = false;
 
         this.cacheValues();
         this.onResize();
@@ -31,8 +31,16 @@
             window.requestAnimationFrame(me.onResize.bind(me))
         });
         window.addEventListener('scroll', function() {
-            window.requestAnimationFrame(me.onScroll.bind(me))
+            if (!this._isScrollDisabled) {
+                window.requestAnimationFrame(me.onScroll.bind(me))
+                this._isScrollDisabled = true;
+            }
         });
+
+        // Disable scroll-jumping for a short time to avoid flickering
+        window.setInterval(function () {
+            this._isScrollDisabled = false;
+        }, 100);
     }
 
     Blog.prototype.cacheValues = function() {
@@ -58,27 +66,17 @@
 
         root.style.setProperty('--background-color', visiblePost.color);
 
-        // if (!this._isScrollDisabled) {
-            // Scroll to the top when you’ve reached the bottom
-            if (this._clonedPostsHeight + scrollPosition >= this._scrollHeight) {
-                // Scroll down 1 pixel to allow upwards scrolling
-                scrollPositionNext = 1;
-            } else if (scrollPosition <= 0) {
-                // Scroll to the bottom when you reach the top
-                scrollPositionNext = this._scrollHeight - this._clonedPostsHeight;
-            }
 
-            this.setScrollPosition(scrollPositionNext);
-            // this._isScrollDisabled = true;
-        // }
+        // Scroll to the top when you’ve reached the bottom
+        if (this._clonedPostsHeight + scrollPosition >= this._scrollHeight) {
+            // Scroll down 1 pixel to allow upwards scrolling
+            scrollPositionNext = 1;
+        } else if (scrollPosition <= 0) {
+            // Scroll to the bottom when you reach the top
+            scrollPositionNext = this._scrollHeight - this._clonedPostsHeight;
+        }
 
-        // if (this._isScrollDisabled) {
-        //     // Disable scroll-jumping for a short time to avoid flickering
-        //     window.setTimeout(function () {
-        //         this._isScrollDisabled = false;
-        //         console.log(this._isScrollDisabled);
-        //     }, 40);
-        // }
+        this.setScrollPosition(scrollPositionNext);
     };
 
     Blog.prototype.clonePosts = function() {
