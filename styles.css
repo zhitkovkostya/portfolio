@@ -64,6 +64,7 @@ body {
     font-size: var(--font-size-large);
     font-weight: var(--font-weight-bold);
     text-transform: uppercase;
+    letter-spacing: 0.75rem;
     line-height: var(--font-height-large);
 }
 
@@ -167,6 +168,8 @@ body {
     font-size: var(--font-size-huge);
     font-weight: var(--font-weight-bold);
     font-family: var(--font-family);
+    letter-spacing: 0.75rem;
+    text-transform: uppercase;
     line-height: var(--font-height-huge);
     color: rgba(255, 255, 255, .2);
     user-select: none;
