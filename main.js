@@ -21,7 +21,6 @@
         this._scrollPosition = 0;
         this._scrollHeight = 0;
         this._clonedPostsHeight = 0;
-        this._isScrollDisabled = false;
 
         this.cacheValues();
         this.onResize();
@@ -31,16 +30,8 @@
             window.requestAnimationFrame(me.onResize.bind(me))
         });
         window.addEventListener('scroll', function() {
-            if (!this._isScrollDisabled) {
-                window.requestAnimationFrame(me.onScroll.bind(me))
-                this._isScrollDisabled = true;
-            }
+            window.requestAnimationFrame(me.onScroll.bind(me))
         });
-
-        // Disable scroll-jumping for a short time to avoid flickering
-        window.setInterval(function () {
-            this._isScrollDisabled = false;
-        }, 100);
     }
 
     Blog.prototype.cacheValues = function() {
