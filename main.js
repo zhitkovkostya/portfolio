@@ -1,14 +1,16 @@
 'use strict';
 
 (function () {
-    var blog;
+    var blog, tagList;
 
     document.addEventListener('DOMContentLoaded', onDocumentReady);
 
     function onDocumentReady() {
-        var pageElement = document.querySelector('.js-page');
+        var pageElement = document.querySelector('.js-page'),
+            tagListElement = document.querySelector('.js-tag-list');
 
         blog = new Blog(pageElement);
+        tagList = new TagList(tagListElement);
     }
 
     function Blog(pageElement) {
@@ -29,9 +31,12 @@
         window.addEventListener('resize', function() {
             window.requestAnimationFrame(me.onResize.bind(me))
         });
-        window.addEventListener('scroll', function() {
+        document.addEventListener('wheel', function() {
             window.requestAnimationFrame(me.onScroll.bind(me))
-        });
+        }, {
+      capture: true,
+      passive: true
+    });
     }
 
     Blog.prototype.cacheValues = function() {
@@ -172,12 +177,27 @@
     };
 
     function Post(data) {
-        var colorDefault = document.documentElement.style.getPropertyValue('--background-color');
+        var me = this,
+            io;
 
         this.element = data.element;
-        this.color = this.parseColor(this.element.dataset.color || colorDefault);
         this.y1 = data.y1;
         this.y2 = data.y2;
+        this.color = this.parseColor(this.element.dataset.color);
+        this.tags = this.parseTags(this.element.dataset.tags);
+
+        io = new IntersectionObserver(entries => {
+            var entry = entries[0],
+                ratio = entry.intersectionRatio;
+
+                if (ratio > 0.25 && ratio < 0.5) {
+                    tagList.setActiveTags(me.tags);
+                }
+        }, {
+            threshold: [0, 0.25, 0.75, 1]
+        });
+
+        io.observe(this.element);
     }
 
     /**
@@ -186,9 +206,65 @@
      * @returns {*}
      */
     Post.prototype.parseColor = function(hex) {
-        var match = /#([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})/.exec(hex),
+        var defaultColor = document.documentElement.style.getPropertyValue('--background-color'),
+            color = hex || defaultColor,
+            match = /#([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})/.exec(color),
             parsed = [parseInt(match[1], 16), parseInt(match[2], 16), parseInt(match[3], 16), 1];
 
         return parsed;
     };
+
+    /**
+     *
+     * @param rawTags - project tags (e.g. 'react,redux,webpack')
+     * @returns {*}
+     */
+    Post.prototype.parseTags = function(rawTags) {
+        rawTags = rawTags || '';
+
+        return rawTags.split(',');
+    };
+
+
+    function TagList(element) {
+        this.element = element;
+        this.tagElements = Array.from(this.element.querySelectorAll('.js-tag'));
+        this.collection = this.createCollection();
+    }
+
+    TagList.prototype.createCollection = function() {
+        var collection, name, text;
+
+        collection = this.tagElements.map(function(element) {
+            name = element.dataset.name.toLowerCase();
+            text = element.textContent.toLowerCase();
+
+            return new Tag({
+                element: element,
+                name: name,
+                text: text
+            });
+        });
+
+        return collection;
+    };
+
+    /**
+     * @param tags {[String]} - an array of tags
+     */
+    TagList.prototype.setActiveTags = function(tags) {
+        this.collection.forEach(function(tag) {
+            tag.toggleActive(tags.includes(tag.name));
+        });
+    };
+
+    function Tag(data) {
+        this.element = data.element;
+        this.name = data.name;
+        this.text = data.text;
+    }
+
+    Tag.prototype.toggleActive = function(state) {
+        this.element.classList.toggle('tags__item--active', state);
+    }
 })();

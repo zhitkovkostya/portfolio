@@ -171,6 +171,12 @@ body {
     letter-spacing: 0.75rem;
     text-transform: uppercase;
     line-height: var(--font-height-huge);
-    color: rgba(255, 255, 255, .2);
+    color: var(--font-color-inverted);
+    opacity: .2;
     user-select: none;
+    transition: opacity var(--trasnsition);
+}
+
+.tags__item--active {
+    opacity: 1;
 }
