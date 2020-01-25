@@ -14,79 +14,28 @@
     }
 
     function Blog(pageElement) {
-        var me = this,
-            postElements = pageElement.querySelectorAll('.js-post');
+        var postElements = pageElement.querySelectorAll('.js-post');
 
         this.element = pageElement;
         this.posts = this.createPostCollection(postElements);
-        this._clonedPosts = this.clonePosts();
-        this._scrollPosition = 0;
-        this._scrollHeight = 0;
-        this._clonedPostsHeight = 0;
+        this._clonedPost = this.clonePost();
 
-        this.cacheValues();
-        this.onResize();
-        this.onScroll();
-
-        window.addEventListener('resize', function() {
-            window.requestAnimationFrame(me.onResize.bind(me))
-        });
-        document.addEventListener('wheel', function() {
-            window.requestAnimationFrame(me.onScroll.bind(me))
-        }, {
-      capture: true,
-      passive: true
-    });
+        this.initScrollLoop();
     }
 
-    Blog.prototype.cacheValues = function() {
-        this._scrollPosition = this.getScrollPosition();
-        this._scrollHeight = this.getScrollHeight();
-        this._clonedPostsHeight = this.getClonedPostsHeight();
-
-        if (this._scrollPosition <= 0) {
-            // Scroll 1px to allow upwards scrolling
-            this.setScrollPosition(1);
-        }
-    };
-
-    Blog.prototype.onResize = function() {
-        this.cacheValues();
-    };
-
-    Blog.prototype.onScroll = function() {
-        var scrollPosition = this.getScrollPosition(),
-            scrollPositionNext;
-
-        // Scroll to the top when you’ve reached the bottom
-        if (this._clonedPostsHeight + scrollPosition >= this._scrollHeight) {
-            // Scroll down 1 pixel to allow upwards scrolling
-            scrollPositionNext = 1;
-        } else if (scrollPosition <= 0) {
-            // Scroll to the bottom when you reach the top
-            scrollPositionNext = this._scrollHeight - this._clonedPostsHeight;
-        }
-
-        this.setScrollPosition(scrollPositionNext);
-    };
-
-    Blog.prototype.clonePosts = function() {
-        var postElements = this.posts.map(function(post) {
-                return post.element;
-            }),
-            lastPostElement = postElements[postElements.length - 1],
+    Blog.prototype.clonePost = function() {
+        var firstPostElement = this.posts[0].element,
+            lastPostElement = this.posts[this.posts.length - 1].element,
             parentElement = lastPostElement.parentElement,
-            postClones = [],
-            cloneElement, cloneInstance, i;
+            firstPostCloneElement, cloneInstance;
 
-        cloneElement = postElements[0].cloneNode(true);
-        parentElement.insertBefore(cloneElement, lastPostElement.nextSibling);
-        cloneInstance = this.createPostModel(cloneElement);
+        firstPostCloneElement = firstPostElement.cloneNode(true);
+        parentElement.insertBefore(firstPostCloneElement, lastPostElement.nextSibling);
+        cloneInstance = this.createPostModel(firstPostCloneElement);
 
         this.posts.push(cloneInstance);
-        postClones.push(cloneInstance);
 
-        return postClones;
+        return cloneInstance;
     };
 
     Blog.prototype.createPostCollection = function(postElements) {
@@ -111,31 +60,29 @@
         document.documentElement.style.setProperty('--background-color', color);
     };
 
-    Blog.prototype.getClonedPostsHeight = function() {
-        var postElement, postMarginBottom, postHeight;
-
-        return this._clonedPosts.reduce(function(totalHeight, clonedPost) {
-            postElement = clonedPost.element;
-            postMarginBottom = parseInt(getComputedStyle(postElement).marginBottom);
-            postHeight = postElement.offsetHeight;
-
-            return totalHeight + postHeight + postMarginBottom;
-        }, 0);
-    };
-
-    Blog.prototype.getScrollHeight = function() {
-        var verticalPadding = parseInt(getComputedStyle(this.element).paddingTop)
-            + parseInt(getComputedStyle(this.element).paddingBottom);
-
-        return this.element.scrollHeight - verticalPadding;
-    };
-
-    Blog.prototype.getScrollPosition = function() {
-        return window.scrollY;
-    };
-
     Blog.prototype.setScrollPosition = function(position) {
         window.scrollTo({top: position});
+    };
+
+    Blog.prototype.initScrollLoop = function() {
+        var me = this,
+            firstPostElement = this.posts[0].element,
+            lastPostElement = this.posts[this.posts.length - 1].element,
+            lastPostIntersectionObserver, firstPostIntersectionObserver;
+
+        this.setScrollPosition(5);
+
+        lastPostIntersectionObserver = new IntersectionObserver(function(entries) {
+            var entry = entries[0];
+
+            if (entry.isIntersecting) {
+                me.setScrollPosition(5);
+            }
+        }, {
+            threshold: [0.95]
+        });
+
+        lastPostIntersectionObserver.observe(lastPostElement);
     };
 
     function Post(data) {
@@ -148,12 +95,12 @@
         this.color = this.element.dataset.color;
         this.tags = this.parseTags(this.element.dataset.tags);
 
-        io = new IntersectionObserver(entries => {
+        io = new IntersectionObserver(function(entries) {
             var entry = entries[0];
 
             if (entry.isIntersecting) {
                 tagList.setActiveTags(me.tags);
-                blog.setActiveColor(this.color)
+                blog.setActiveColor(me.color)
             }
         });
 
