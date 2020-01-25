@@ -55,13 +55,8 @@
     };
 
     Blog.prototype.onScroll = function() {
-        var root = document.documentElement,
-            scrollPosition = this.getScrollPosition(),
-            color = this.calculateAverageColor(scrollPosition),
+        var scrollPosition = this.getScrollPosition(),
             scrollPositionNext;
-
-        root.style.setProperty('--background-color', color);
-
 
         // Scroll to the top when you’ve reached the bottom
         if (this._clonedPostsHeight + scrollPosition >= this._scrollHeight) {
@@ -108,45 +103,12 @@
         });
     };
 
-    Blog.prototype.getClosestPosts = function() {
-        var scrollPosition = this.getScrollPosition(),
-            viewportCenterPosition = scrollPosition + (window.outerHeight / 1.5),
-            posts = this.posts,
-            postsCount = posts.length,
-            index = 0,
-            post, visiblePost, nextPost;
-
-        // TODO: remove
-        this.element.dataset.scrollPosition = scrollPosition;
-
-        while (!visiblePost && index < postsCount) {
-            post = posts[index];
-
-            if (viewportCenterPosition >= post.y1 && viewportCenterPosition <= post.y2) {
-                visiblePost = post;
-                nextPost = posts[index + 1] || posts[0];
-            }
-
-            index += 1;
-        }
-
-        return [visiblePost, nextPost];
+    Blog.prototype.getActiveColor = function() {
+        return document.documentElement.style.getPropertyValue('--background-color')
     };
 
-    Blog.prototype.calculateAverageColor = function(scrollPosition) {
-        var posts = this.getClosestPosts(),
-            currentPost = posts[0],
-            currentColor = currentPost.color,
-            nextPost = posts[1],
-            nextColor = nextPost.color,
-            ratio = (scrollPosition - currentPost.y1) / (nextPost.y2 - currentPost.y1),
-            redValue = parseInt((currentColor[0] + ratio * (nextColor[0] - currentColor[0])), 10),
-            greenValue = parseInt((currentColor[1] + ratio * (nextColor[1] - currentColor[1])), 10),
-            blueValue = parseInt((currentColor[2] + ratio * (nextColor[2] - currentColor[2])), 10),
-            alphaValue = parseFloat(currentColor[3] + ratio * (nextColor[3] - currentColor[3])),
-            color = 'rgba(' + redValue + ',' + greenValue + ',' + blueValue + ',' + alphaValue + ')';
-
-        return color;
+    Blog.prototype.setActiveColor = function(color) {
+        document.documentElement.style.setProperty('--background-color', color);
     };
 
     Blog.prototype.getClonedPostsHeight = function() {
@@ -183,36 +145,20 @@
         this.element = data.element;
         this.y1 = data.y1;
         this.y2 = data.y2;
-        this.color = this.parseColor(this.element.dataset.color);
+        this.color = this.element.dataset.color;
         this.tags = this.parseTags(this.element.dataset.tags);
 
         io = new IntersectionObserver(entries => {
-            var entry = entries[0],
-                ratio = entry.intersectionRatio;
+            var entry = entries[0];
 
-                if (ratio > 0.25 && ratio < 0.5) {
-                    tagList.setActiveTags(me.tags);
-                }
-        }, {
-            threshold: [0, 0.25, 0.75, 1]
+            if (entry.isIntersecting) {
+                tagList.setActiveTags(me.tags);
+                blog.setActiveColor(this.color)
+            }
         });
 
         io.observe(this.element);
     }
-
-    /**
-     *
-     * @param hex - color in hex (e.g. #aabbcc)
-     * @returns {*}
-     */
-    Post.prototype.parseColor = function(hex) {
-        var defaultColor = document.documentElement.style.getPropertyValue('--background-color'),
-            color = hex || defaultColor,
-            match = /#([0-9a-fA-F]{2})([0-9a-fA-F]{2})([0-9a-fA-F]{2})/.exec(color),
-            parsed = [parseInt(match[1], 16), parseInt(match[2], 16), parseInt(match[3], 16), 1];
-
-        return parsed;
-    };
 
     /**
      *
