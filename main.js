@@ -94,6 +94,7 @@
         this.y2 = data.y2;
         this.color = this.element.dataset.color;
         this.tags = this.parseTags(this.element.dataset.tags);
+        this.slider = this.createSlider();
 
         io = new IntersectionObserver(function(entries) {
             var entry = entries[0];
@@ -116,6 +117,13 @@
         rawTags = rawTags || '';
 
         return rawTags.split(',');
+    };
+
+    Post.prototype.createSlider = function() {
+        var sliderElement = this.element.querySelector('.js-slider'),
+            slider = sliderElement ? new Slider(sliderElement, this.element) : null;
+
+        return slider;
     };
 
 
@@ -159,5 +167,80 @@
 
     Tag.prototype.toggleActive = function(state) {
         this.element.classList.toggle('tags__item--active', state);
+    };
+
+    function Slider(element, postElement) {
+        this.element = element;
+        this.postElement = postElement;
+        this.index = null;
+        this.controlsElement = this.getControlsElement();
+        this.slides = this.getSlides();
+        this.controls = this.createControls();
+
+        this.renderControls();
+        this.setActiveSlide(0);
     }
+
+    Slider.prototype.getSlides = function() {
+        var slideElements = this.element.querySelectorAll('.js-slide');
+
+        return Array.from(slideElements);
+    };
+
+    Slider.prototype.getControlsElement = function() {
+        var controlsElements = this.element.querySelector('.js-controls');
+
+        return controlsElements;
+    };
+
+    Slider.prototype.createControls = function() {
+        var controls = this.slides.length > 1 ? this.slides.map(this.createControl.bind(this)) : [];
+        return controls;
+    };
+
+    Slider.prototype.createControl = function(item, index) {
+        var controlElement = document.createElement('li'),
+            buttonElement = document.createElement('button');
+
+        controlElement.classList.add('controls__item');
+        controlElement.setAttribute('tabindex', '-1');
+        controlElement.setAttribute('data-index', String(index));
+        buttonElement.classList.add('controls__button');
+
+        if (index === this.index) {
+            buttonElement.classList.add('controls__button--active');
+        }
+
+        controlElement.appendChild(buttonElement);
+
+        buttonElement.addEventListener('click', this.onControlClick.bind(this, index));
+
+        return controlElement;
+    };
+
+    Slider.prototype.onControlClick = function(index) {
+        this.setActiveSlide(index);
+    };
+
+    Slider.prototype.setActiveSlide = function(activeSlideIndex) {
+        this.index = activeSlideIndex;
+
+        this.slides.forEach(function(slide, slideIndex) {
+            slide.classList.toggle('slider__item--active', slideIndex === activeSlideIndex);
+        });
+
+        this.controls.forEach(function(control, controlIndex) {
+            control.classList.toggle('controls__button--active', controlIndex === activeSlideIndex);
+        });
+
+        this.postElement.classList.toggle('post--wide', activeSlideIndex > 0);
+    };
+
+    Slider.prototype.renderControls = function() {
+        this.controls.map(this.renderControl.bind(this));
+    };
+
+    Slider.prototype.renderControl = function(controlElement) {
+        this.controlsElement.appendChild(controlElement);
+    };
 })();
