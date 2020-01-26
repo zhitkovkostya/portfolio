@@ -117,9 +117,10 @@ body {
 
 .post {
     display: grid;
+    grid-row-gap: 5rem;
     grid-column-gap: 5rem;
-    grid-template-columns: repeat(4, 1fr);
     grid-template-rows: auto 1fr;
+    grid-template-columns: repeat(4, 1fr);
     height: 100vh;
     margin-bottom: 100vh;
     padding: 5rem;
@@ -133,7 +134,7 @@ body {
 .post__heading {
     grid-column-start: 1;
     grid-column-end: 1;
-    margin: 0 0 5rem 0;
+    margin: 0;
 }
 
 .post__content {
@@ -207,7 +208,7 @@ body {
 .slider__list {
     display: flex;
     flex: 1;
-    margin: 5rem 0;
+    margin: 0 0 5rem 0;
     padding: 0;
     list-style: none;
 }
@@ -222,7 +223,36 @@ body {
 
 .slider__item--active {
     display: block;
+    animation: fadeIn var(--trasnsition);
 }
+
+.slider__item:not(:first-child).slider__item--active {
+    animation: slide var(--trasnsition);
+}
+
+@keyframes slide {
+    0% {
+        opacity: 0;
+        transform: translateX(2rem);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+
 
 .controls {
     display: flex;
