@@ -131,6 +131,11 @@
         this.element = element;
         this.tagElements = Array.from(this.element.querySelectorAll('.js-tag'));
         this.collection = this.createCollection();
+
+        this.fitText();
+
+        window.addEventListener('resize', this.fitText.bind(this));
+        window.addEventListener('orientationchange', this.fitText.bind(this));
     }
 
     TagList.prototype.createCollection = function() {
@@ -157,6 +162,22 @@
         this.collection.forEach(function(tag) {
             tag.toggleActive(tags.includes(tag.name));
         });
+    };
+
+    TagList.prototype.fitText = function(tags) {
+        var parentHeight = this.element.parentElement.offsetHeight,
+            fontSize = 3;
+
+        this.setFontSize(fontSize);
+
+        while (this.element.offsetHeight < parentHeight) {
+            fontSize += 0.1;
+            this.setFontSize(fontSize);
+        }
+    };
+
+    TagList.prototype.setFontSize = function(fontSize) {
+        document.documentElement.style.setProperty('--font-size-tags', fontSize + 'rem');
     };
 
     function Tag(data) {

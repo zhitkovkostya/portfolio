@@ -7,11 +7,12 @@
     --font-size: 1.75rem;
     --font-size-large: 3.5rem;
     --font-size-huge: 7rem;
+    --font-size-tags: var(--font-size-huge);
 
     --font-height-small: 3rem;
     --font-height: 3rem;
     --font-height-large: 4rem;
-    --font-height-huge: 8rem;
+    --font-height-huge: 1.14285714;
 
     --font-weight-normal: 400;
     --font-weight-bold: 700;
@@ -38,6 +39,11 @@ html {
 
 body {
     margin: 0;
+    -ms-overflow-style: none;
+}
+
+body::-webkit-scrollbar {
+    display: none;
 }
 
 .page {
@@ -171,6 +177,7 @@ body {
 }
 
 .tags {
+    width: 100%;
     margin: 0;
     padding: 0;
     list-style: none;
@@ -181,7 +188,7 @@ body {
 
 .tags__item {
     display: inline;
-    font-size: var(--font-size-huge);
+    font-size: var(--font-size-tags);
     font-weight: var(--font-weight-bold);
     font-family: var(--font-family);
     letter-spacing: 0.75rem;
