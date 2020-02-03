@@ -47,8 +47,6 @@ body::-webkit-scrollbar {
 }
 
 .page {
-    overflow-x: hidden;
-    overflow-y: auto;
 }
 
 .page__main {

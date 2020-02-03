@@ -17,10 +17,27 @@
         var postElements = pageElement.querySelectorAll('.js-post');
 
         this.element = pageElement;
+        this.mainElement = this.element.querySelector('.js-page-main');
         this.posts = this.createPostCollection(postElements);
         this._clonedPost = this.clonePost();
+        this._scrollTop = window.scrollY;
 
-        this.initScrollLoop();
+        var me = this;
+
+        document.addEventListener('mousewheel', function(event) {
+            var scaleDelta = event.deltaY;
+
+            event.preventDefault();
+            event.stopPropagation();
+
+            me._scrollTop -= scaleDelta;
+
+            window.gsap.to(me.mainElement, {y: me._scrollTop, duration: .5});
+        }, {
+            passive: false
+        });
+
+        // this.initScrollLoop();
     }
 
     Blog.prototype.clonePost = function() {
@@ -76,10 +93,10 @@
             var entry = entries[0];
 
             if (entry.isIntersecting) {
-                me.setScrollPosition(5);
+                me.setScrollPosition(0);
             }
         }, {
-            threshold: [0.95]
+            threshold: [1]
         });
 
         lastPostIntersectionObserver.observe(lastPostElement);
