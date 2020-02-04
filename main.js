@@ -17,42 +17,29 @@
         var postElements = pageElement.querySelectorAll('.js-post');
 
         this.element = pageElement;
-        this.mainElement = this.element.querySelector('.js-page-main');
         this.posts = this.createPostCollection(postElements);
-        this._clonedPost = this.clonePost();
-        this._scrollTop = window.scrollY;
 
-        var me = this;
+        this.createPostClones();
+        this.scrollToPost(1);
 
-        document.addEventListener('mousewheel', function(event) {
-            var scaleDelta = event.deltaY;
-
-            event.preventDefault();
-            event.stopPropagation();
-
-            me._scrollTop -= scaleDelta;
-
-            window.gsap.to(me.mainElement, {y: me._scrollTop, duration: .5});
-        }, {
-            passive: false
-        });
-
-        // this.initScrollLoop();
+        this.element.addEventListener('scroll', this.onScroll.bind(this));
     }
 
-    Blog.prototype.clonePost = function() {
+    Blog.prototype.createPostClones = function() {
         var firstPostElement = this.posts[0].element,
             lastPostElement = this.posts[this.posts.length - 1].element,
             parentElement = lastPostElement.parentElement,
-            firstPostCloneElement, cloneInstance;
+            firstPostCloneElement, firstPostCloneInstance, lastPostCloneElement, lastPostCloneInstance;
 
         firstPostCloneElement = firstPostElement.cloneNode(true);
+        lastPostCloneElement = lastPostElement.cloneNode(true);
         parentElement.insertBefore(firstPostCloneElement, lastPostElement.nextSibling);
-        cloneInstance = this.createPostModel(firstPostCloneElement);
+        parentElement.insertBefore(lastPostCloneElement, firstPostElement);
+        firstPostCloneInstance = this.createPostModel(firstPostCloneElement);
+        lastPostCloneInstance = this.createPostModel(lastPostCloneElement);
 
-        this.posts.push(cloneInstance);
-
-        return cloneInstance;
+        this.posts.push(firstPostCloneInstance);
+        this.posts.unshift(lastPostCloneInstance);
     };
 
     Blog.prototype.createPostCollection = function(postElements) {
@@ -60,13 +47,7 @@
     };
 
     Blog.prototype.createPostModel = function(postElement) {
-        var postElementHeight = postElement.offsetHeight + parseInt(getComputedStyle(postElement).marginBottom);
-
-        return new Post({
-            element: postElement,
-            y1: postElement.offsetTop,
-            y2: postElement.offsetTop + postElementHeight
-        });
+        return new Post({ element: postElement });
     };
 
     Blog.prototype.getActiveColor = function() {
@@ -77,29 +58,24 @@
         document.documentElement.style.setProperty('--background-color', color);
     };
 
-    Blog.prototype.setScrollPosition = function(position) {
-        window.scrollTo({top: position});
+    Blog.prototype.scrollToPost = function(index, position) {
+        var position = position || 'top';
+        var post = this.posts[index];
+        var value = position === 'bottom'
+            ? post.element.offsetTop + post.element.offsetHeight
+            : post.element.offsetTop;
+
+        this.element.scrollTo({top: value});
     };
 
-    Blog.prototype.initScrollLoop = function() {
-        var me = this,
-            firstPostElement = this.posts[0].element,
-            lastPostElement = this.posts[this.posts.length - 1].element,
-            lastPostIntersectionObserver, firstPostIntersectionObserver;
-
-        this.setScrollPosition(5);
-
-        lastPostIntersectionObserver = new IntersectionObserver(function(entries) {
-            var entry = entries[0];
-
-            if (entry.isIntersecting) {
-                me.setScrollPosition(0);
-            }
-        }, {
-            threshold: [1]
-        });
-
-        lastPostIntersectionObserver.observe(lastPostElement);
+    Blog.prototype.onScroll = function(event) {
+        if (this.element.offsetHeight + this.element.scrollTop >= this.element.scrollHeight) {
+            event.preventDefault();
+            this.scrollToPost(1, 'bottom');
+        } else if (this.element.scrollTop === 0) {
+            event.preventDefault();
+            this.scrollToPost(this.posts.length - 2);
+        }
     };
 
     function Post(data) {
@@ -107,8 +83,6 @@
             io;
 
         this.element = data.element;
-        this.y1 = data.y1;
-        this.y2 = data.y2;
         this.color = this.element.dataset.color;
         this.tags = this.parseTags(this.element.dataset.tags);
         this.slider = this.createSlider();
