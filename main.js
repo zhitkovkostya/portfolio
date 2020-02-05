@@ -1,7 +1,7 @@
 'use strict';
 
 (function () {
-    var blog, tagList;
+    var blog, tagList, debounceTimer;
 
     document.addEventListener('DOMContentLoaded', onDocumentReady);
 
@@ -69,13 +69,21 @@
     };
 
     Blog.prototype.onScroll = function(event) {
-        if (this.element.offsetHeight + this.element.scrollTop >= this.element.scrollHeight) {
-            event.preventDefault();
-            this.scrollToPost(1, 'bottom');
-        } else if (this.element.scrollTop === 0) {
-            event.preventDefault();
-            this.scrollToPost(this.posts.length - 2);
+        var me = this;
+
+        if (debounceTimer) {
+            window.clearTimeout(debounceTimer);
         }
+
+        debounceTimer = window.setTimeout(function() {
+            if (me.element.offsetHeight + me.element.scrollTop >= me.element.scrollHeight) {
+                event.preventDefault();
+                me.scrollToPost(1, 'bottom');
+            } else if (me.element.scrollTop === 0) {
+                event.preventDefault();
+                me.scrollToPost(me.posts.length - 2);
+            }
+        }, 50);
     };
 
     function Post(data) {
