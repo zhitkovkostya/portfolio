@@ -42,9 +42,10 @@ body {
 }
 
 .page {
-    overflow: auto;
+    overflow: scroll;
     width: 100vw;
     height: 100vh;
+    -webkit-overflow-scrolling: touch;
 }
 
 .page::-webkit-scrollbar {
