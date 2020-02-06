@@ -1,23 +1,21 @@
 'use strict';
 
 (function () {
-    var blog, tagList, debounceTimer;
+    var blog, debounceTimer;
 
     document.addEventListener('DOMContentLoaded', onDocumentReady);
 
     function onDocumentReady() {
-        var pageElement = document.querySelector('.js-page'),
-            tagListElement = document.querySelector('.js-tag-list');
+        var pageElement = document.querySelector('.js-page');
 
         blog = new Blog(pageElement);
-        tagList = new TagList(tagListElement);
+
     }
 
-    function Blog(pageElement) {
-        var postElements = pageElement.querySelectorAll('.js-post');
-
-        this.element = pageElement;
-        this.posts = this.createPostCollection(postElements);
+    function Blog(element) {
+        this.element = element;
+        this.tagList = this.createTagList();
+        this.posts = this.createPostCollection();
 
         this.createPostClones();
         this.scrollToPost(1);
@@ -42,20 +40,29 @@
         this.posts.unshift(lastPostCloneInstance);
     };
 
+    Blog.prototype.createTagList = function() {
+        var tagListElement = document.querySelector('.js-tag-list');
+
+        return new TagList(tagListElement);
+    };
+
     Blog.prototype.createPostCollection = function(postElements) {
-        return Array.from(postElements).map(this.createPostModel);
+        var postElements = this.element.querySelectorAll('.js-post');
+
+        return Array.from(postElements).map(this.createPostModel.bind(this));
     };
 
     Blog.prototype.createPostModel = function(postElement) {
-        return new Post({ element: postElement });
+        return new Post({ element: postElement, collection: this.posts });
     };
 
     Blog.prototype.getActiveColor = function() {
         return document.documentElement.style.getPropertyValue('--background-color')
     };
 
-    Blog.prototype.setActiveColor = function(color) {
-        document.documentElement.style.setProperty('--background-color', color);
+    Blog.prototype.setActivePost = function(post) {
+        document.documentElement.style.setProperty('--background-color', post.color);
+        this.tagList.setActiveTags(post.tags);
     };
 
     Blog.prototype.scrollToPost = function(index, position) {
@@ -90,6 +97,7 @@
         var me = this,
             io;
 
+        this.collection = data.collection;
         this.element = data.element;
         this.color = this.element.dataset.color;
         this.tags = this.parseTags(this.element.dataset.tags);
@@ -99,8 +107,7 @@
             var entry = entries[0];
 
             if (entry.isIntersecting) {
-                tagList.setActiveTags(me.tags);
-                blog.setActiveColor(me.color)
+                blog.setActivePost(me)
             }
         });
 
