@@ -1,273 +1,192 @@
-'use strict';
+(function() {
+    document.addEventListener('DOMContentLoaded', initPortfolio);
 
-(function () {
-    var blog, debounceTimer;
-
-    document.addEventListener('DOMContentLoaded', onDocumentReady);
-
-    function onDocumentReady() {
-        var pageElement = document.querySelector('.js-page');
-
-        blog = new Blog(pageElement);
-
+    function initPortfolio() {
+        new Portfolio(document.querySelector('.js-portfolio'));
     }
+})();
 
-    function Blog(element) {
-        this.element = element;
-        this.tagList = this.createTagList();
-        this.posts = this.createPostCollection();
+function Portfolio(element) {
+    this.element = element;
+    this.projects = this.createProjectCollection();
+    this.tagCloud = this.initTagCloud();
+}
 
-        this.createPostClones();
-        this.scrollToPost(1);
+Portfolio.prototype.createProjectCollection = function() {
+    var projectElements = this.element.querySelectorAll('.js-project');
 
-        this.element.addEventListener('scroll', this.onScroll.bind(this));
-    }
+    return Array.from(projectElements).map(this.createProjectModel.bind(this));
+};
 
-    Blog.prototype.createPostClones = function() {
-        var firstPostElement = this.posts[0].element,
-            lastPostElement = this.posts[this.posts.length - 1].element,
-            parentElement = lastPostElement.parentElement,
-            firstPostCloneElement, firstPostCloneInstance, lastPostCloneElement, lastPostCloneInstance;
+Portfolio.prototype.createProjectModel = function(element) {
+    return new Project(element, {
+        portfolio: this
+    });
+};
 
-        firstPostCloneElement = firstPostElement.cloneNode(true);
-        lastPostCloneElement = lastPostElement.cloneNode(true);
-        parentElement.insertBefore(firstPostCloneElement, lastPostElement.nextSibling);
-        parentElement.insertBefore(lastPostCloneElement, firstPostElement);
-        firstPostCloneInstance = this.createPostModel(firstPostCloneElement);
-        lastPostCloneInstance = this.createPostModel(lastPostCloneElement);
+Portfolio.prototype.initTagCloud = function() {
+    var element = document.querySelector('.js-tag-cloud'),
+        tags = this.projects
+            .reduce(function(allTags, project) {
+                return allTags.concat(project.tags);
+            }, [])
+            .filter(function(value, index, self) {
+                return value && self.indexOf(value) === index;
+            })
+            .sort();
 
-        this.posts.push(firstPostCloneInstance);
-        this.posts.unshift(lastPostCloneInstance);
-    };
+    return new TagCloud(element, {
+        tags: tags
+    });
+};
 
-    Blog.prototype.createTagList = function() {
-        var tagListElement = document.querySelector('.js-tag-list');
+Portfolio.prototype.setActiveProject = function(project) {
+    this.tagCloud.setActiveTags(project.tags);
+};
 
-        return new TagList(tagListElement);
-    };
+function Project(element, config) {
+    this.element = element;
+    this.portfolio = config.portfolio;
+    this.swiper = this.initSwiper();
+    this.tags = this.element.dataset.tags ? this.element.dataset.tags.split(',') : [];
 
-    Blog.prototype.createPostCollection = function(postElements) {
-        var postElements = this.element.querySelectorAll('.js-post');
+    this.initObserver();
+}
 
-        return Array.from(postElements).map(this.createPostModel.bind(this));
-    };
-
-    Blog.prototype.createPostModel = function(postElement) {
-        return new Post({ element: postElement, collection: this.posts });
-    };
-
-    Blog.prototype.getActiveColor = function() {
-        return document.documentElement.style.getPropertyValue('--background-color')
-    };
-
-    Blog.prototype.setActivePost = function(post) {
-        document.documentElement.style.setProperty('--background-color', post.color);
-        this.tagList.setActiveTags(post.tags);
-    };
-
-    Blog.prototype.scrollToPost = function(index, position) {
-        var position = position || 'top';
-        var post = this.posts[index];
-        var value = position === 'bottom'
-            ? post.element.offsetTop + post.element.offsetHeight
-            : post.element.offsetTop;
-
-        this.element.scrollTo({top: value});
-    };
-
-    Blog.prototype.onScroll = function(event) {
-        var me = this;
-
-        if (debounceTimer) {
-            window.clearTimeout(debounceTimer);
-        }
-
-        debounceTimer = window.setTimeout(function() {
-            if (me.element.offsetHeight + me.element.scrollTop >= me.element.scrollHeight) {
-                event.preventDefault();
-                me.scrollToPost(1, 'bottom');
-            } else if (me.element.scrollTop === 0) {
-                event.preventDefault();
-                me.scrollToPost(me.posts.length - 2);
+Project.prototype.initSwiper = function() {
+    var swiperElement = this.element.querySelector('.js-swiper-container'),
+        swiperOptions = {
+            loop: true, //this.element.querySelectorAll('.js-swiper-slide').length > 1,
+            watchOverflow: true,
+            effect: 'coverflow',
+            spaceBetween: 200,
+            slidesPerView: 1,
+            coverflowEffect: {
+                slideShadows: false,
+                rotate: 15
+            },
+            pagination: {
+                type: 'bullets',
+                el: '.swiper-pagination',
+                clickable: true,
+                bulletElement: 'button',
+                bulletClass: 'button',
+                bulletActiveClass: 'button--active'
+            },
+            breakpoints: {
+                768: {
+                    spaceBetween: 0
+                },
+                1440: {
+                    spaceBetween: 0
+                }
+            },
+            on: {
+                init: this.alignTextContent.bind(this),
+                resize: this.alignTextContent.bind(this)
             }
-        }, 50);
-    };
+        };
 
-    function Post(data) {
-        var me = this,
-            io;
+    if (this.element.querySelectorAll('.js-swiper-slide').length > 1) {
+        return new Swiper(swiperElement, swiperOptions);
+    } else {
+        this.alignTextContent();
+    }
 
-        this.collection = data.collection;
-        this.element = data.element;
-        this.color = this.element.dataset.color;
-        this.tags = this.parseTags(this.element.dataset.tags);
-        this.slider = this.createSlider();
+    return null;
+};
 
-        io = new IntersectionObserver(function(entries) {
+Project.prototype.alignTextContent = function() {
+    var headerElement = this.element.querySelector('.js-project-header'),
+        textElements = this.element.querySelectorAll('.text');
+
+    textElements.forEach(function(textElement) {
+        if (textElement) {
+            textElement.style.top = headerElement.offsetHeight + 'px';
+            textElement.style.opacity = '1';
+        }
+    });
+};
+
+Project.prototype.initObserver = function() {
+    var me = this,
+        observer = new IntersectionObserver(function(entries) {
             var entry = entries[0];
 
             if (entry.isIntersecting) {
-                blog.setActivePost(me)
+                me.portfolio.setActiveProject(me)
             }
+        }, {
+            threshold: [0]
         });
 
-        io.observe(this.element);
+    observer.observe(this.element);
+};
+
+function TagCloud(element, config) {
+    this.element = element;
+    this.tags = this.createTagCollection(config.tags);
+
+    this.fitText();
+
+    window.addEventListener('resize', this.fitText.bind(this));
+    window.addEventListener('orientationchange', this.fitText.bind(this));
+};
+
+TagCloud.prototype.createTagCollection = function(tags) {
+    var me = this,
+        collection, tagElement, textNode;
+
+    collection = tags.map(function(tag) {
+        tagElement = document.createElement('li');
+        tagElement.innerText = tag;
+        tagElement.classList.add('tag');
+        tagElement.classList.add('js-tag');
+        textNode = document.createTextNode(' ');
+        me.element.appendChild(tagElement);
+        me.element.appendChild(textNode);
+
+        return new Tag({
+            element: tagElement,
+            text: tag
+        });
+    });
+
+    return collection;
+};
+
+/**
+ * @param tags {[String]} - an array of tags
+ */
+TagCloud.prototype.setActiveTags = function(tags) {
+    this.tags.forEach(function(tag) {
+        tag.toggleActive(tags.includes(tag.text));
+    });
+};
+
+TagCloud.prototype.fitText = function() {
+    var parentHeight = this.element.parentElement.offsetHeight,
+        fontSize = 3;
+
+    while (this.element.offsetHeight < parentHeight) {
+        fontSize += 0.1;
+        this.setFontSize(fontSize.toFixed(2));
     }
 
-    /**
-     *
-     * @param rawTags - project tags (e.g. 'react,redux,webpack')
-     * @returns {*}
-     */
-    Post.prototype.parseTags = function(rawTags) {
-        rawTags = rawTags || '';
-
-        return rawTags.split(',');
-    };
-
-    Post.prototype.createSlider = function() {
-        var sliderElement = this.element.querySelector('.js-slider'),
-            slider = sliderElement ? new Slider(sliderElement, this.element) : null;
-
-        return slider;
-    };
-
-
-    function TagList(element) {
-        this.element = element;
-        this.tagElements = Array.from(this.element.querySelectorAll('.js-tag'));
-        this.collection = this.createCollection();
-
-        this.fitText();
-
-        window.addEventListener('resize', this.fitText.bind(this));
-        window.addEventListener('orientationchange', this.fitText.bind(this));
+    if (this.element.offsetHeight > parentHeight) {
+        this.setFontSize(fontSize - 0.1);
     }
+};
 
-    TagList.prototype.createCollection = function() {
-        var collection, name, text;
+TagCloud.prototype.setFontSize = function(fontSize) {
+    document.documentElement.style.setProperty('--font-size-tags', fontSize + 'rem');
+};
 
-        collection = this.tagElements.map(function(element) {
-            name = element.dataset.name.toLowerCase();
-            text = element.textContent.toLowerCase();
+function Tag(config) {
+    this.element = config.element;
+    this.text = config.text;
+}
 
-            return new Tag({
-                element: element,
-                name: name,
-                text: text
-            });
-        });
-
-        return collection;
-    };
-
-    /**
-     * @param tags {[String]} - an array of tags
-     */
-    TagList.prototype.setActiveTags = function(tags) {
-        this.collection.forEach(function(tag) {
-            tag.toggleActive(tags.includes(tag.name));
-        });
-    };
-
-    TagList.prototype.fitText = function(tags) {
-        var parentHeight = this.element.parentElement.offsetHeight,
-            fontSize = 3;
-
-        this.setFontSize(fontSize);
-
-        while (this.element.offsetHeight < parentHeight) {
-            fontSize += 0.1;
-            this.setFontSize(fontSize);
-        }
-    };
-
-    TagList.prototype.setFontSize = function(fontSize) {
-        document.documentElement.style.setProperty('--font-size-tags', fontSize + 'rem');
-    };
-
-    function Tag(data) {
-        this.element = data.element;
-        this.name = data.name;
-        this.text = data.text;
-    }
-
-    Tag.prototype.toggleActive = function(state) {
-        this.element.classList.toggle('tags__item--active', state);
-    };
-
-    function Slider(element, postElement) {
-        this.element = element;
-        this.postElement = postElement;
-        this.index = null;
-        this.controlsElement = this.getControlsElement();
-        this.slides = this.getSlides();
-        this.controls = this.createControls();
-
-        this.renderControls();
-        this.setActiveSlide(0);
-    }
-
-    Slider.prototype.getSlides = function() {
-        var slideElements = this.element.querySelectorAll('.js-slide');
-
-        return Array.from(slideElements);
-    };
-
-    Slider.prototype.getControlsElement = function() {
-        var controlsElements = this.element.querySelector('.js-controls');
-
-        return controlsElements;
-    };
-
-    Slider.prototype.createControls = function() {
-        var controls = this.slides.length > 1 ? this.slides.map(this.createControl.bind(this)) : [];
-        return controls;
-    };
-
-    Slider.prototype.createControl = function(item, index) {
-        var controlElement = document.createElement('li'),
-            buttonElement = document.createElement('button');
-
-        controlElement.classList.add('controls__item');
-        controlElement.setAttribute('tabindex', '-1');
-        controlElement.setAttribute('data-index', String(index));
-        buttonElement.classList.add('controls__button');
-
-        if (index === this.index) {
-            buttonElement.classList.add('controls__button--active');
-        }
-
-        controlElement.appendChild(buttonElement);
-
-        buttonElement.addEventListener('click', this.onControlClick.bind(this, index));
-
-        return controlElement;
-    };
-
-    Slider.prototype.onControlClick = function(index) {
-        this.setActiveSlide(index);
-    };
-
-    Slider.prototype.setActiveSlide = function(activeSlideIndex) {
-        this.index = activeSlideIndex;
-
-        this.slides.forEach(function(slide, slideIndex) {
-            slide.classList.toggle('slider__item--active', slideIndex === activeSlideIndex);
-        });
-
-        this.controls.forEach(function(control, controlIndex) {
-            control.classList.toggle('controls__button--active', controlIndex === activeSlideIndex);
-        });
-
-        this.postElement.classList.toggle('post--wide', activeSlideIndex > 0);
-    };
-
-    Slider.prototype.renderControls = function() {
-        this.controls.map(this.renderControl.bind(this));
-    };
-
-    Slider.prototype.renderControl = function(controlElement) {
-        this.controlsElement.appendChild(controlElement);
-    };
-})();
+Tag.prototype.toggleActive = function(state) {
+    this.element.classList.toggle('tag--active', state);
+};
