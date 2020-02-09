@@ -10,7 +10,7 @@
     --font-height-small: 3rem;
     --font-height: 3rem;
     --font-height-large: 4rem;
-    --font-height-huge: 1.14285714;
+    --font-height-huge: 1.1;
 
     --font-weight-normal: 400;
     --font-weight-bold: 700;
@@ -64,6 +64,7 @@ p {
     top: 0;
     right: 0;
     width: calc(75% - 4rem);
+    max-width: 1050px;
     height: 100vh;
     pointer-events: none;
 }
@@ -88,10 +89,7 @@ p {
     position: relative;
     /*position: sticky;*/
     /*top: 0;*/
-    display: flex;
-    flex-direction: column;
     height: 100vh;
-    padding-bottom: 40px;
 }
 
 .project:focus {
@@ -100,11 +98,13 @@ p {
 
 .project__header {
     z-index: 2;
-    padding: 40px 40px 44px 40px;
+    display: inline-flex;
+    max-width: 100%;
+    padding: 36px 40px 40px 40px;
 }
 
 .project__heading {
-    width: 100%;
+    display: inline-flex;
     margin: 0;
     font-size: 28px;
     font-weight: bold;
@@ -136,7 +136,6 @@ p {
 }
 
 .swiper-slide {
-    padding: 0 40px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -151,17 +150,14 @@ p {
     position: relative;
     top: 0;
     transition: top var(--trasnsition), opacity var(--trasnsition);
+    padding: 0 40px;
     opacity: 0;
 }
 
 .swiper-slide .image {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    max-width: calc(100% - 180px);
-    max-height: calc(100% - 180px);
-    transform: translate3d(-50%, -50%, 0);
-    transition: transform 300ms, left 300ms, right 300ms, opacity 300ms;
+    max-width: 50%;
+    max-height: 75%;
+    transition: opacity 300ms;
     opacity: 1;
 }
 
@@ -229,7 +225,7 @@ p {
 
 .socials {
     display: flex;
-    margin: 0;
+    margin: 48px 0;
     padding: 0;
     list-style: none;
 }
@@ -241,9 +237,9 @@ p {
 .tag-cloud {
     width: 100%;
     margin: 0;
-    padding: 0;
+    padding: 24px 0 0 0;
     list-style: none;
-    word-spacing: 4rem;
+    word-spacing: 5.1rem;
     pointer-events: none;
     text-align: right;
 }
@@ -253,7 +249,7 @@ p {
     font-size: var(--font-size-tags);
     font-weight: var(--font-weight-bold);
     font-family: var(--font-family);
-    letter-spacing: 0.75rem;
+    letter-spacing: 0.64rem;
     text-transform: uppercase;
     line-height: var(--font-height-huge);
     white-space: nowrap;
@@ -269,9 +265,14 @@ p {
 }
 
 @media all and (max-width: 767px) {
-    .project__heading,
-    .project__content .text {
-        width: 100%;
+    .project__header,
+    .swiper-slide .text {
+        max-width: 100%;
+    }
+
+    .swiper-slide .image {
+        max-width: calc(100% - 4rem);
+        max-height: calc(100% - 4rem);
     }
 
     .tag-cloud {
@@ -280,15 +281,20 @@ p {
 }
 
 @media all and (min-width: 768px) {
-    .project__heading,
-    .project__content .text {
-        width: 50%;
+    .project__header,
+    .swiper-slide .text {
+        max-width: 48%;
+    }
+
+    .swiper-slide .image {
+        max-width: 75%;
+        max-height: 75%;
     }
 }
 
 @media all and (min-width: 1440px) {
-    .project__heading,
-    .project__content .text {
-        width: 25%;
+    .project__header,
+    .swiper-slide .text {
+        max-width: 310px;
     }
 }
