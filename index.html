@@ -16,14 +16,14 @@
     <main class="main">
         <ul class="portfolio js-portfolio">
             <li class="portfolio__item" style="background: linear-gradient(0deg, rgba(177, 190, 194, 1) 0%, rgba(0, 0, 0, 1) 50%, rgba(0, 0, 0, 1) 100%); color: #fff;">
-                <article class="project js-project" tabindex="0">
+                <article class="project js-project" id="about" tabindex="0">
                     <header class="project__header js-project-header">
                         <h2 class="project__heading">Konstantin Zhitkov Portfolio v1.0</h2>
                     </header>
                     <div class="project__content">
                         <div class="swiper-container js-swiper-container">
                             <div class="swiper-wrapper">
-                                <div class="swiper-slide js-swiper-slide">
+                                <div class="swiper-slide swiper-slide-main js-swiper-slide">
                                     <div class="text">
                                         <p>
                                             Showcase of works and experiments  by Konstantin Zhitkov, front-end developer from Saint-Petersburg, Russia.
@@ -51,14 +51,14 @@
                 </article>
             </li>
             <li class="portfolio__item" style="background: linear-gradient(0deg, rgba(0, 190, 155, 1) 0%, rgba(177, 190, 194, 1) 50%, rgba(177, 190, 194, 1) 100%);">
-                <article class="project js-project" data-tags="es6,scss,storybook,css3,html5,bem" tabindex="0">
+                <article class="project js-project" id="cpunits" data-tags="es6,scss,storybook,css3,html5,bem" tabindex="0">
                     <header class="project__header js-project-header">
                         <h2 class="project__heading">CPU UI</h2>
                     </header>
                     <section class="project__content">
                         <div class="swiper-container js-swiper-container">
                             <div class="swiper-wrapper">
-                                <div class="swiper-slide js-swiper-slide">
+                                <div class="swiper-slide swiper-slide-main js-swiper-slide">
                                     <div class="text">
                                         <p>
                                             CPUnits is a UI system for rainstation:149, a project by designer Andrey Belikov.
@@ -94,14 +94,14 @@
                 </article>
             </li>
             <li class="portfolio__item" style="background: linear-gradient(0deg, rgba(115, 196, 251, 1) 0%, rgba(0, 190, 155, 1) 50%, rgba(0, 190, 155, 1) 100%);">
-                <article class="project js-project" data-tags="svg,react,redux,webgl,webpack,scss,html5,css3,api,bem,es6,spa,swift,python" tabindex="0">
+                <article class="project js-project" id="viberoom" data-tags="svg,react,redux,webgl,webpack,scss,html5,css3,api,bem,es6,spa,swift,python" tabindex="0">
                     <header class="project__header js-project-header">
                         <h2 class="project__heading">VIBEROOM</h2>
                     </header>
-                    <div class="project__content">
+                    <section class="project__content">
                         <div class="swiper-container js-swiper-container">
                             <div class="swiper-wrapper">
-                                <div class="swiper-slide js-swiper-slide">
+                                <div class="swiper-slide swiper-slide-main js-swiper-slide">
                                     <div class="text">
                                         <p>
                                             A web/iOS radio app streaming lo-fi centered beats. The playlist contains a huge collection of calming beats, perfect for studying, work or relaxation needs.
@@ -120,19 +120,20 @@
                                     <img src="images/viberoom-3.png" class="image" alt="VIBEROOM RADIO iOS app night theme">
                                 </div>
                             </div>
+                            <div class="swiper-pagination"></div>
                         </div>
-                    </div>
+                    </section>
                 </article>
             </li>
             <li class="portfolio__item" style="background: linear-gradient(0deg, rgba(155, 89, 182, 1) 0%, rgba(115, 196, 251, 1) 50%, rgba(115, 196, 251, 1) 100%);">
-                <article class="project js-project" data-tags="gulp,scss,css3,jquery,html5,backbone.js,marionette.js,coldfusion,t-sql,extjs,bem" tabindex="0">
+                <article class="project js-project" id="caesar" data-tags="gulp,scss,css3,jquery,html5,backbone.js,marionette.js,coldfusion,t-sql,extjs,bem" tabindex="0">
                     <header class="project__header js-project-header">
                         <h2 class="project__heading">GET CAESAR</h2>
                     </header>
                     <section class="project__content">
                         <div class="swiper-container js-swiper-container">
                             <div class="swiper-wrapper">
-                                <div class="swiper-slide js-swiper-slide">
+                                <div class="swiper-slide swiper-slide-main js-swiper-slide">
                                     <div class="text">
                                         <p>
                                             A professional software solution for project management developed at GET IT GmbH.
@@ -148,14 +149,14 @@
                 </article>
             </li>
             <li class="portfolio__item" style="background: linear-gradient(0deg, rgba(179, 212, 252, 1) 0%, rgba(155, 89, 182, 1) 50%, rgba(155, 89, 182, 1) 100%);">
-                <article class="project js-project" data-tags="gulp,pug,scss,css3,html5,jquery,bem,smacss" tabindex="0">
+                <article class="project js-project" id="ezhevika" data-tags="gulp,pug,scss,css3,html5,jquery,bem,smacss" tabindex="0">
                     <header class="project__header js-project-header">
                         <h2 class="project__heading">Ezhevika</h2>
                     </header>
                     <section class="project__content">
                         <div class="swiper-container js-swiper-container">
                             <div class="swiper-wrapper">
-                                <div class="swiper-slide js-swiper-slide">
+                                <div class="swiper-slide swiper-slide-main js-swiper-slide">
                                     <div class="text">
                                         <p>
                                             Ezhevika is an electronic music label founded in 2009. Label focuses on underground and highly skilled art.
@@ -177,14 +178,14 @@
                 </article>
             </li>
             <li class="portfolio__item" style="background: linear-gradient(0deg, rgba(0, 0, 0, 1) 0%, rgba(179, 212, 252, 1) 50%, rgba(179, 212, 252, 1) 100%);">
-                <article class="project js-project" data-tags="react,redux,svg,d3,scss,spa,html5,es6,webpack,css3,node.js,mongodb" tabindex="0">
+                <article class="project js-project" id="exsys" data-tags="react,redux,svg,d3,scss,spa,html5,es6,webpack,css3,node.js,mongodb" tabindex="0">
                     <header class="project__header js-project-header">
                         <h2 class="project__heading">ExSys</h2>
                     </header>
                     <section class="project__content">
                         <div class="swiper-container js-swiper-container">
                             <div class="swiper-wrapper">
-                                <div class="swiper-slide js-swiper-slide">
+                                <div class="swiper-slide swiper-slide-main js-swiper-slide">
                                     <div class="text">
                                         <p>
                                             Web-based fuzzy expert system app for information security analysis.

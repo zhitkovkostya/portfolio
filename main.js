@@ -45,6 +45,7 @@ Portfolio.prototype.setActiveProject = function(project) {
 };
 
 function Project(element, config) {
+    this.id = element.id;
     this.element = element;
     this.portfolio = config.portfolio;
     this.swiper = this.initSwiper();
@@ -56,30 +57,15 @@ function Project(element, config) {
 Project.prototype.initSwiper = function() {
     var swiperElement = this.element.querySelector('.js-swiper-container'),
         swiperOptions = {
-            loop: true, //this.element.querySelectorAll('.js-swiper-slide').length > 1,
+            loop: swiperElement.querySelectorAll('.js-swiper-slide').length > 1,
             watchOverflow: true,
-            effect: 'coverflow',
-            spaceBetween: 200,
-            slidesPerView: 1,
-            coverflowEffect: {
-                slideShadows: false,
-                rotate: 15
-            },
             pagination: {
                 type: 'bullets',
-                el: '.swiper-pagination',
+                el: swiperElement.querySelector('.swiper-pagination'),
                 clickable: true,
                 bulletElement: 'button',
                 bulletClass: 'button',
                 bulletActiveClass: 'button--active'
-            },
-            breakpoints: {
-                768: {
-                    spaceBetween: 0
-                },
-                1440: {
-                    spaceBetween: 0
-                }
             },
             on: {
                 init: this.alignTextContent.bind(this),
@@ -87,13 +73,7 @@ Project.prototype.initSwiper = function() {
             }
         };
 
-    if (this.element.querySelectorAll('.js-swiper-slide').length > 1) {
-        return new Swiper(swiperElement, swiperOptions);
-    } else {
-        this.alignTextContent();
-    }
-
-    return null;
+    return new Swiper(swiperElement, swiperOptions);
 };
 
 Project.prototype.alignTextContent = function() {
