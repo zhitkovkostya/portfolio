@@ -39,7 +39,6 @@ html {
 }
 
 body {
-    overflow: scroll;
     width: 100vw;
     height: 100vh;
     margin: 0;
@@ -47,6 +46,12 @@ body {
 
 p {
     margin: 0 0 3rem 0;
+}
+
+.main {
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
 }
 
 .aside {
@@ -66,24 +71,29 @@ p {
 }
 
 .portfolio {
+    overflow: scroll;
+    width: 100vw;
+    height: 100vh;
     margin: 0;
     padding: 0;
     list-style: none;
 }
 
-.portfolio__item {
-    height: 200vh;
+.portfolio::-webkit-scrollbar {
+    display: none;
 }
 
 .project {
-    position: relative;
-    /*position: sticky;*/
-    /*top: 0;*/
-    height: 100vh;
+    height: 200vh;
 }
 
 .project:focus {
     outline: none;
+}
+
+.project__wrapper {
+    position: relative;
+    height: 100vh;
 }
 
 .project__header {

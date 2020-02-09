@@ -1,3 +1,5 @@
+var debounceTimer;
+
 (function() {
     document.addEventListener('DOMContentLoaded', initPortfolio);
 
@@ -10,10 +12,36 @@ function Portfolio(element) {
     this.element = element;
     this.projects = this.createProjectCollection();
     this.tagCloud = this.initTagCloud();
+
+    this.scrollToProject(1);
+
+    this.element.addEventListener('scroll', this.onScroll.bind(this));
+}
+
+Portfolio.prototype.onScroll = function(event) {
+    var me = this;
+
+    if (debounceTimer) {
+        window.clearTimeout(debounceTimer);
+    }
+
+    debounceTimer = window.setTimeout(function () {
+        if (me.element.offsetHeight + me.element.scrollTop >= me.element.scrollHeight) {
+            event.preventDefault();
+            me.scrollToProject(1, 'bottom');
+        } else if (me.element.scrollTop === 0) {
+            event.preventDefault();
+            me.scrollToProject(me.projects.length - 2);
+        }
+    }, 50);
 }
 
 Portfolio.prototype.createProjectCollection = function() {
-    var projectElements = this.element.querySelectorAll('.js-project');
+    var projectElements;
+
+    this.cloneElements();
+
+    projectElements = this.element.querySelectorAll('.js-project');
 
     return Array.from(projectElements).map(this.createProjectModel.bind(this));
 };
@@ -22,6 +50,19 @@ Portfolio.prototype.createProjectModel = function(element) {
     return new Project(element, {
         portfolio: this
     });
+};
+
+Portfolio.prototype.cloneElements = function() {
+    var portfolioItemElements = this.element.querySelectorAll('.js-portfolio-item'),
+        firstItemElement = portfolioItemElements[0],
+        lastItemElement = portfolioItemElements[portfolioItemElements.length - 1],
+        parentElement = lastItemElement.parentElement,
+        firstProjectCloneElement, lastProjectCloneElement;
+
+    firstProjectCloneElement = firstItemElement.cloneNode(true);
+    lastProjectCloneElement = lastItemElement.cloneNode(true);
+    parentElement.insertBefore(firstProjectCloneElement, lastItemElement.nextSibling);
+    parentElement.insertBefore(lastProjectCloneElement, firstItemElement);
 };
 
 Portfolio.prototype.initTagCloud = function() {
@@ -42,6 +83,13 @@ Portfolio.prototype.initTagCloud = function() {
 
 Portfolio.prototype.setActiveProject = function(project) {
     this.tagCloud.setActiveTags(project.tags);
+};
+
+Portfolio.prototype.scrollToProject = function(index, position) {
+    var position = position || 'top',
+        project = this.projects[index];
+
+    project.element.scrollIntoView(position === 'top');
 };
 
 function Project(element, config) {
@@ -93,11 +141,12 @@ Project.prototype.initObserver = function() {
         observer = new IntersectionObserver(function(entries) {
             var entry = entries[0];
 
-            if (entry.isIntersecting) {
+            if (entry.isIntersecting && entry.intersectionRatio > 0) {
+                console.log(entry);
                 me.portfolio.setActiveProject(me)
             }
         }, {
-            threshold: [0]
+            threshold: [0.1]
         });
 
     observer.observe(this.element);
@@ -107,6 +156,7 @@ function TagCloud(element, config) {
     this.element = element;
     this.tags = this.createTagCollection(config.tags);
 
+    this.setActiveTags([]);
     this.fitText();
 
     window.addEventListener('resize', this.fitText.bind(this));
