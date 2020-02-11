@@ -59,7 +59,6 @@ p {
     top: 0;
     right: 0;
     width: 75%;
-    max-width: 1050px;
     height: 100vh;
     pointer-events: none;
 }
@@ -102,9 +101,11 @@ p {
     display: inline-flex;
     max-width: 100%;
     padding: 4.5rem 5rem 5rem 5rem;
+    animation: var(--trasnsition) fadeIn;
 }
 
 .project__heading {
+    z-index: 2;
     display: inline-flex;
     margin: 0;
     font-size: var(--font-size-large);
@@ -142,6 +143,10 @@ p {
     align-items: center;
 }
 
+.swiper-slide-wrapper {
+
+}
+
 .swiper-slide-main {
     justify-content: flex-start;
     align-items: flex-start;
@@ -156,22 +161,24 @@ p {
 }
 
 .swiper-slide .image {
-    max-width: 50%;
-    max-height: 75%;
-    transition: transform 300ms;
-    /*opacity: 1;*/
+    object-fit: contain;
+    width: 50%;
+    height: 75%;
+    transition: transform var(--trasnsition);
 }
 
+.swiper-slide .text {
+    transition: transform var(--trasnsition);
+}
+
+.swiper-slide-prev .text,
 .swiper-slide-prev .image {
-    right: 0;
     transform: translate3d(-10rem, 0, 0);
-    opacity: 0 !important;
 }
 
+.swiper-slide-next .text,
 .swiper-slide-next .image {
-    left: 0;
     transform: translate3d(10rem, 0, 0);
-    opacity: 0 !important;
 }
 
 .button {
@@ -215,12 +222,12 @@ p {
 
 .link {
     min-width: auto;
-    font-size: var(--font-size);
+    font-size: var(--font-size-medium);
     font-weight: bold;
     font-family: var(--font-family);
     text-transform: uppercase;
     text-decoration: none;
-    line-height: var(--font-height);
+    line-height: var(--font-height-medium);
     color: #000;
     box-shadow: none;
 }
@@ -266,15 +273,25 @@ p {
     opacity: 1;
 }
 
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
 @media all and (max-width: 767px) {
     .project__header,
     .swiper-slide .text {
-        max-width: 100%;
+        width: 100%;
     }
 
     .swiper-slide .image {
-        max-width: calc(100% - 4rem);
-        max-height: calc(100% - 4rem);
+        width: calc(100% - 4rem);
+        height: calc(100% - 4rem);
     }
 
     .tag-cloud {
@@ -286,12 +303,12 @@ p {
 @media all and (min-width: 768px) {
     .project__header,
     .swiper-slide .text {
-        max-width: 48%;
+        width: 48%;
     }
 
     .swiper-slide .image {
-        max-width: 75%;
-        max-height: 75%;
+        width: 75%;
+        height: 75%;
     }
 
     .tag-cloud {
