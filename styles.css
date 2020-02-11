@@ -158,20 +158,20 @@ p {
 .swiper-slide .image {
     max-width: 50%;
     max-height: 75%;
-    transition: opacity 300ms;
-    opacity: 1;
+    transition: transform 300ms;
+    /*opacity: 1;*/
 }
 
 .swiper-slide-prev .image {
-    /*right: 0;*/
-    /*transform: translate3d(0, -50%, 0);*/
-    opacity: .7;
+    right: 0;
+    transform: translate3d(-10rem, 0, 0);
+    opacity: 0 !important;
 }
 
 .swiper-slide-next .image {
-    /*left: 0;*/
-    /*transform: translate3d(0, -50%, 0);*/
-    opacity: .7;
+    left: 0;
+    transform: translate3d(10rem, 0, 0);
+    opacity: 0 !important;
 }
 
 .button {

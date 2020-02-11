@@ -107,6 +107,11 @@ Project.prototype.initSwiper = function() {
         swiperOptions = {
             loop: swiperElement.querySelectorAll('.js-swiper-slide').length > 1,
             watchOverflow: true,
+            effect: 'fade',
+            fadeEffect: {
+                crossFade: true
+            },
+            followFinger: false,
             pagination: {
                 type: 'bullets',
                 el: swiperElement.querySelector('.swiper-pagination'),
