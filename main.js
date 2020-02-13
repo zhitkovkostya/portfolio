@@ -29,7 +29,7 @@ function Portfolio(element) {
 }
 
 Portfolio.prototype.loopProjectsOnScroll = function(event) {
-    var offsetHeight = document.body.offsetHeight,
+    var offsetHeight = window.outerHeight,
         scrollHeight = document.body.scrollHeight,
         scrollTop = window.scrollY;
 
