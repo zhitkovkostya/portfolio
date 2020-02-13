@@ -1,5 +1,3 @@
-var debounceTimer;
-
 (function() {
     document.addEventListener('DOMContentLoaded', initPortfolio);
 
@@ -9,32 +7,73 @@ var debounceTimer;
 })();
 
 function Portfolio(element) {
+    var me = this;
+
     this.element = element;
     this.projects = this.createProjectCollection();
     this.tagCloud = this.initTagCloud();
 
     this.scrollToProject(1);
 
-    this.element.addEventListener('scroll', this.onScroll.bind(this));
+    this.element.addEventListener('scroll', throttle(this.onScroll.bind(this), 100));
+
+    this.colors = this.projects.map(function(project) {
+        return {
+            color: project.color,
+            position: project.element.offsetTop / me.element.scrollHeight * 100
+        }
+    });
+    this.colors.push({
+        color: this.projects[2].color,
+        position: 100
+    });
 }
 
 Portfolio.prototype.onScroll = function(event) {
-    var me = this;
+    var me = this,
+        offsetHeight = this.element.offsetHeight,
+        scrollHeight = this.element.scrollHeight,
+        scrollTop = this.element.scrollTop,
+        scrollAmount = scrollTop / scrollHeight * 100,
+        pos1, pos2, color1, color2;
 
-    if (debounceTimer) {
-        window.clearTimeout(debounceTimer);
+
+    if (scrollAmount <= me.colors[0].position) {
+        // Use the first color the the colors array
+        me.setColor(me.colors[0].color);
+    } else if (scrollAmount >= me.colors[me.colors.length - 1].position) {
+        // Use the last color the the colors array
+        me.setColor(me.colors[me.colors.length - 1].color);
+    } else {
+        // Get the position
+        for (var i = 0; i < me.colors.length; i++) {
+            // Find out between which 2 colors we currently are
+            if (scrollAmount >= me.colors[i].position) {
+                pos1 = me.colors[i].position;
+                color1 = me.colors[i].color;
+            } else {
+                pos2 = me.colors[i].position;
+                color2 = me.colors[i].color;
+                break;
+            }
+        }
     }
 
-    debounceTimer = window.setTimeout(function () {
-        if (me.element.offsetHeight + me.element.scrollTop >= me.element.scrollHeight) {
-            event.preventDefault();
-            me.scrollToProject(1, 'bottom');
-        } else if (me.element.scrollTop === 0) {
-            event.preventDefault();
-            me.scrollToProject(me.projects.length - 2);
-        }
-    }, 50);
-}
+    // Calculate the relative amount scrolled
+    var relativePos = ((scrollAmount - pos1) / (pos2 - pos1));
+
+    // Calculate new color value and set it using setColor
+    var color = me.calculateColor(color1, color2, relativePos);
+    me.setColor(color);
+
+    if (offsetHeight + scrollTop >= scrollHeight) {
+        event.preventDefault();
+        me.scrollToProject(1, 'bottom');
+    } else if (me.element.scrollTop === 0) {
+        event.preventDefault();
+        me.scrollToProject(me.projects.length - 2);
+    }
+};
 
 Portfolio.prototype.createProjectCollection = function() {
     var projectElements;
@@ -85,6 +124,16 @@ Portfolio.prototype.setActiveProject = function(project) {
     this.tagCloud.setActiveTags(project.tags);
 };
 
+Portfolio.prototype.setColor = function(color) {
+    document.documentElement.style.setProperty('--background-color', color);
+};
+
+Portfolio.prototype.calculateColor = function(begin, end, pos) {
+    var color = 'rgba(' + [parseInt((begin[0] + pos * (end[0] - begin[0])), 10), parseInt((begin[1] + pos * (end[1] - begin[1])), 10), parseInt((begin[2] + pos * (end[2] - begin[2])), 10), 1].join(', ') + ')';
+
+    return color;
+};
+
 Portfolio.prototype.scrollToProject = function(index, position) {
     var position = position || 'top',
         project = this.projects[index];
@@ -98,6 +147,12 @@ function Project(element, config) {
     this.portfolio = config.portfolio;
     this.swiper = this.initSwiper();
     this.tags = this.element.dataset.tags ? this.element.dataset.tags.split(',') : [];
+    this.color = this.getRGBA(this.element.dataset.color);
+    this.y1 = this.element.offsetTop;
+    this.y2 = this.y1 + this.element.offsetHeight;
+
+    this.element.parentElement.dataset.y1 = this.y1;
+    this.element.parentElement.dataset.y2 = this.y2;
 
     this.initObserver();
 }
@@ -141,17 +196,25 @@ Project.prototype.alignTextContent = function() {
     });
 };
 
+/**
+ *
+ * @param hex - color in hex (e.g. #aabbcc)
+ * @returns {*}
+ */
+Project.prototype.getRGBA = function(hex) {
+    return hex.toLowerCase().match(/[0-9a-f]{2}/g).map(number => parseInt(number, 16));
+};
+
 Project.prototype.initObserver = function() {
     var me = this,
         observer = new IntersectionObserver(function(entries) {
             var entry = entries[0];
 
             if (entry.isIntersecting && entry.intersectionRatio > 0) {
-                console.log(entry);
                 me.portfolio.setActiveProject(me)
             }
         }, {
-            threshold: [0.1]
+            threshold: [0.3]
         });
 
     observer.observe(this.element);
@@ -225,3 +288,13 @@ function Tag(config) {
 Tag.prototype.toggleActive = function(state) {
     this.element.classList.toggle('tag--active', state);
 };
+
+function throttle(fn, wait) {
+    var time = Date.now();
+    return function() {
+        if ((time + wait - Date.now()) < 0) {
+            fn();
+            time = Date.now();
+        }
+    }
+}
