@@ -79,7 +79,7 @@ p {
     padding: 0;
     background-color: var(--background-color);
     list-style: none;
-    transition: background-color var(--trasnsition);
+    transition: background-color 150ms;
     -webkit-overflow-scrolling: touch;
 }
 

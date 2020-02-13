@@ -15,7 +15,8 @@ function Portfolio(element) {
 
     this.scrollToProject(1);
 
-    this.element.addEventListener('scroll', throttle(this.onScroll.bind(this), 100));
+    this.element.addEventListener('scroll', throttle(this.updateColorOnScroll.bind(this), 50));
+    this.element.addEventListener('scroll', debounce(this.loopProjectsOnScroll.bind(this)));
 
     this.colors = this.projects.map(function(project) {
         return {
@@ -29,50 +30,54 @@ function Portfolio(element) {
     });
 }
 
-Portfolio.prototype.onScroll = function(event) {
-    var me = this,
-        offsetHeight = this.element.offsetHeight,
+Portfolio.prototype.loopProjectsOnScroll = function(event) {
+    var offsetHeight = this.element.offsetHeight,
         scrollHeight = this.element.scrollHeight,
+        scrollTop = this.element.scrollTop;
+
+    if (offsetHeight + scrollTop >= scrollHeight) {
+        event.preventDefault();
+        this.scrollToProject(1, 'bottom');
+    } else if (this.element.scrollTop === 0) {
+        event.preventDefault();
+        this.scrollToProject(this.projects.length - 2);
+    }
+};
+
+Portfolio.prototype.updateColorOnScroll = function() {
+    var scrollHeight = this.element.scrollHeight,
         scrollTop = this.element.scrollTop,
         scrollAmount = scrollTop / scrollHeight * 100,
-        pos1, pos2, color1, color2;
+        relativePos, pos1, pos2, color, color1, color2, i;
 
 
-    if (scrollAmount <= me.colors[0].position) {
+    if (scrollAmount <= this.colors[0].position) {
         // Use the first color the the colors array
-        me.setColor(me.colors[0].color);
-    } else if (scrollAmount >= me.colors[me.colors.length - 1].position) {
+        this.setColor(this.colors[0].color);
+    } else if (scrollAmount >= this.colors[this.colors.length - 1].position) {
         // Use the last color the the colors array
-        me.setColor(me.colors[me.colors.length - 1].color);
+        this.setColor(this.colors[this.colors.length - 1].color);
     } else {
         // Get the position
-        for (var i = 0; i < me.colors.length; i++) {
+        for (i = 0; i < this.colors.length; i += 1) {
             // Find out between which 2 colors we currently are
-            if (scrollAmount >= me.colors[i].position) {
-                pos1 = me.colors[i].position;
-                color1 = me.colors[i].color;
+            if (scrollAmount >= this.colors[i].position) {
+                pos1 = this.colors[i].position;
+                color1 = this.colors[i].color;
             } else {
-                pos2 = me.colors[i].position;
-                color2 = me.colors[i].color;
+                pos2 = this.colors[i].position;
+                color2 = this.colors[i].color;
                 break;
             }
         }
     }
 
     // Calculate the relative amount scrolled
-    var relativePos = ((scrollAmount - pos1) / (pos2 - pos1));
+    relativePos = ((scrollAmount - pos1) / (pos2 - pos1));
 
     // Calculate new color value and set it using setColor
-    var color = me.calculateColor(color1, color2, relativePos);
-    me.setColor(color);
-
-    if (offsetHeight + scrollTop >= scrollHeight) {
-        event.preventDefault();
-        me.scrollToProject(1, 'bottom');
-    } else if (me.element.scrollTop === 0) {
-        event.preventDefault();
-        me.scrollToProject(me.projects.length - 2);
-    }
+    color = this.calculateColor(color1, color2, relativePos);
+    this.setColor(color);
 };
 
 Portfolio.prototype.createProjectCollection = function() {
@@ -291,10 +296,28 @@ Tag.prototype.toggleActive = function(state) {
 
 function throttle(fn, wait) {
     var time = Date.now();
+
     return function() {
         if ((time + wait - Date.now()) < 0) {
-            fn();
+            fn(...arguments);
             time = Date.now();
         }
     }
 }
+
+var debounce = function (fn) {
+    var timeout;
+
+    return function () {
+        var context = this,
+            args = arguments;
+
+        if (timeout) {
+            window.cancelAnimationFrame(timeout);
+        }
+
+        timeout = window.requestAnimationFrame(function () {
+            fn.apply(context, args);
+        });
+    }
+};
