@@ -160,12 +160,8 @@ function Project(element, config) {
     this.element = element;
     this.portfolio = config.portfolio;
     this.swiper = this.initSwiper();
-    this.swiperPagination = this.element.querySelector('.js-swiper-pagination');
     this.tags = this.element.dataset.tags ? this.element.dataset.tags.split(',') : [];
     this.color = this.getRGBA(this.element.dataset.color);
-
-    this.element.parentElement.dataset.y1 = this.y1;
-    this.element.parentElement.dataset.y2 = this.y2;
 
     this.initObserver();
 }
@@ -206,33 +202,6 @@ Project.prototype.initSwiper = function() {
     io.observe(swiperElement);
 
     return new Swiper(swiperElement, swiperOptions);
-};
-
-Project.prototype.stickSwiperPagination = function() {
-    // var stickyClassName = 'swiper-pagination-sticky',
-    //     stickyElement = document.querySelector('.' + stickyClassName);
-    //
-    // if (stickyElement) {
-    //     stickyElement.classList.remove(stickyClassName);
-    // }
-    //
-    // if (this.swiperPagination) {
-    //     this.swiperPagination.classList.add(stickyClassName);
-    // }
-};
-
-
-Project.prototype.unstickSwiperPagination = function() {
-    // var stickyClassName = 'swiper-pagination-sticky',
-    //     stickyElement = document.querySelector('.' + stickyClassName);
-    //
-    // if (stickyElement) {
-    //     stickyElement.classList.remove(stickyClassName);
-    // }
-    //
-    // if (this.swiperPagination) {
-    //     this.swiperPagination.classList.toggle('swiper-pagination-sticky');
-    // }
 };
 
 Project.prototype.alignTextContent = function() {
