@@ -16,6 +16,7 @@ function Portfolio(element) {
     this.scrollToProject(1);
 
     this.element.addEventListener('scroll', throttle(this.updateColorOnScroll.bind(this), 50));
+    // this.element.addEventListener('scroll', throttle(this.positionSwiperPaginationOnScroll.bind(this), 50));
     this.element.addEventListener('scroll', debounce(this.loopProjectsOnScroll.bind(this)));
 
     this.colors = this.projects.map(function(project) {
@@ -29,6 +30,14 @@ function Portfolio(element) {
         position: 100
     });
 }
+//
+// Portfolio.prototype.positionSwiperPaginationOnScroll = function(event) {
+//     var offsetHeight = this.element.offsetHeight,
+//         scrollHeight = this.element.scrollHeight,
+//         scrollTop = this.element.scrollTop;
+//
+//     debugger
+// };
 
 Portfolio.prototype.loopProjectsOnScroll = function(event) {
     var offsetHeight = this.element.offsetHeight,
@@ -151,10 +160,9 @@ function Project(element, config) {
     this.element = element;
     this.portfolio = config.portfolio;
     this.swiper = this.initSwiper();
+    this.swiperPagination = this.element.querySelector('.js-swiper-pagination');
     this.tags = this.element.dataset.tags ? this.element.dataset.tags.split(',') : [];
     this.color = this.getRGBA(this.element.dataset.color);
-    this.y1 = this.element.offsetTop;
-    this.y2 = this.y1 + this.element.offsetHeight;
 
     this.element.parentElement.dataset.y1 = this.y1;
     this.element.parentElement.dataset.y2 = this.y2;
@@ -163,7 +171,8 @@ function Project(element, config) {
 }
 
 Project.prototype.initSwiper = function() {
-    var swiperElement = this.element.querySelector('.js-swiper-container'),
+    var me = this,
+        swiperElement = this.element.querySelector('.js-swiper-container'),
         swiperOptions = {
             loop: swiperElement.querySelectorAll('.js-swiper-slide').length > 1,
             watchOverflow: true,
@@ -186,7 +195,44 @@ Project.prototype.initSwiper = function() {
             }
         };
 
+    var io = new IntersectionObserver(function(entries) {
+        var entry = entries[0];
+        debugger;
+        me.unstickSwiperPagination();
+    }, {
+        threshold: [0, 1]
+    });
+
+    io.observe(swiperElement);
+
     return new Swiper(swiperElement, swiperOptions);
+};
+
+Project.prototype.stickSwiperPagination = function() {
+    // var stickyClassName = 'swiper-pagination-sticky',
+    //     stickyElement = document.querySelector('.' + stickyClassName);
+    //
+    // if (stickyElement) {
+    //     stickyElement.classList.remove(stickyClassName);
+    // }
+    //
+    // if (this.swiperPagination) {
+    //     this.swiperPagination.classList.add(stickyClassName);
+    // }
+};
+
+
+Project.prototype.unstickSwiperPagination = function() {
+    // var stickyClassName = 'swiper-pagination-sticky',
+    //     stickyElement = document.querySelector('.' + stickyClassName);
+    //
+    // if (stickyElement) {
+    //     stickyElement.classList.remove(stickyClassName);
+    // }
+    //
+    // if (this.swiperPagination) {
+    //     this.swiperPagination.classList.toggle('swiper-pagination-sticky');
+    // }
 };
 
 Project.prototype.alignTextContent = function() {
@@ -216,7 +262,8 @@ Project.prototype.initObserver = function() {
             var entry = entries[0];
 
             if (entry.isIntersecting && entry.intersectionRatio > 0) {
-                me.portfolio.setActiveProject(me)
+                me.portfolio.setActiveProject(me);
+                me.stickSwiperPagination();
             }
         }, {
             threshold: [0.3]

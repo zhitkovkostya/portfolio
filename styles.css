@@ -44,6 +44,8 @@ body {
     width: 100vw;
     height: 100vh;
     margin: 0;
+    background-color: var(--background-color);
+    transition: background-color 150ms;
 }
 
 p {
@@ -77,9 +79,7 @@ p {
     height: 100vh;
     margin: 0;
     padding: 0;
-    background-color: var(--background-color);
     list-style: none;
-    transition: background-color 150ms;
     -webkit-overflow-scrolling: touch;
 }
 
@@ -130,6 +130,7 @@ p {
 
 .swiper-container {
     height: 100%;
+    overflow: initial;
 }
 
 .swiper-container-horizontal > .swiper-pagination-bullets {
@@ -137,7 +138,8 @@ p {
 }
 
 .swiper-pagination {
-    padding: 0 5rem;
+    position: sticky;
+    padding: 40rem 5rem 0 5rem;
     text-align: left;
 }
 
