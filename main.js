@@ -36,7 +36,7 @@ Portfolio.prototype.loopProjectsOnScroll = function(event) {
     if (offsetHeight + scrollTop >= scrollHeight) {
         event.preventDefault();
         this.scrollToProject(1, 'bottom');
-    } else if (scrollTop === 0) {
+    } else if (scrollTop <= 1) {
         event.preventDefault();
         this.scrollToProject(this.projects.length - 2);
     }
