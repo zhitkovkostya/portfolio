@@ -16,7 +16,6 @@ function Portfolio(element) {
     this.scrollToProject(1);
 
     this.element.addEventListener('scroll', throttle(this.updateColorOnScroll.bind(this), 50));
-    // this.element.addEventListener('scroll', throttle(this.positionSwiperPaginationOnScroll.bind(this), 50));
     this.element.addEventListener('scroll', debounce(this.loopProjectsOnScroll.bind(this)));
 
     this.colors = this.projects.map(function(project) {
@@ -30,14 +29,6 @@ function Portfolio(element) {
         position: 100
     });
 }
-//
-// Portfolio.prototype.positionSwiperPaginationOnScroll = function(event) {
-//     var offsetHeight = this.element.offsetHeight,
-//         scrollHeight = this.element.scrollHeight,
-//         scrollTop = this.element.scrollTop;
-//
-//     debugger
-// };
 
 Portfolio.prototype.loopProjectsOnScroll = function(event) {
     var offsetHeight = this.element.offsetHeight,
@@ -167,8 +158,7 @@ function Project(element, config) {
 }
 
 Project.prototype.initSwiper = function() {
-    var me = this,
-        swiperElement = this.element.querySelector('.js-swiper-container'),
+    var swiperElement = this.element.querySelector('.js-swiper-container'),
         swiperOptions = {
             loop: swiperElement.querySelectorAll('.js-swiper-slide').length > 1,
             watchOverflow: true,
@@ -190,16 +180,6 @@ Project.prototype.initSwiper = function() {
                 resize: this.alignTextContent.bind(this)
             }
         };
-
-    var io = new IntersectionObserver(function(entries) {
-        var entry = entries[0];
-        debugger;
-        me.unstickSwiperPagination();
-    }, {
-        threshold: [0, 1]
-    });
-
-    io.observe(swiperElement);
 
     return new Swiper(swiperElement, swiperOptions);
 };
@@ -232,7 +212,6 @@ Project.prototype.initObserver = function() {
 
             if (entry.isIntersecting && entry.intersectionRatio > 0) {
                 me.portfolio.setActiveProject(me);
-                me.stickSwiperPagination();
             }
         }, {
             threshold: [0.3]
