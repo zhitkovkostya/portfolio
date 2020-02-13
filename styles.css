@@ -42,6 +42,7 @@ html {
 }
 
 body {
+    overflow: scroll;
     width: 100vw;
     height: 100vh;
     margin: 0;
@@ -49,16 +50,15 @@ body {
     -webkit-transition: background-color 150ms;
     -o-transition: background-color 150ms;
     transition: background-color 150ms;
+    -webkit-overflow-scrolling: touch;
+}
+
+body::-webkit-scrollbar {
+    display: none;
 }
 
 p {
     margin: 0 0 3rem 0;
-}
-
-.main {
-    overflow: hidden;
-    width: 100vw;
-    height: 100vh;
 }
 
 .aside {
@@ -77,18 +77,9 @@ p {
 }
 
 .portfolio {
-    overflow-y: scroll;
-    overflow-x: hidden;
-    width: 100vw;
-    height: 100vh;
     margin: 0;
     padding: 0;
     list-style: none;
-    -webkit-overflow-scrolling: touch;
-}
-
-.portfolio::-webkit-scrollbar {
-    display: none;
 }
 
 .project {

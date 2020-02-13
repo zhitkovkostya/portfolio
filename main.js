@@ -7,21 +7,19 @@
 })();
 
 function Portfolio(element) {
-    var me = this;
-
     this.element = element;
     this.projects = this.createProjectCollection();
     this.tagCloud = this.initTagCloud();
 
     this.scrollToProject(1);
 
-    this.element.addEventListener('scroll', throttle(this.updateColorOnScroll.bind(this), 50));
-    this.element.addEventListener('scroll', debounce(this.loopProjectsOnScroll.bind(this)));
+    window.addEventListener('scroll', throttle(this.updateColorOnScroll.bind(this), 50));
+    window.addEventListener('scroll', debounce(this.loopProjectsOnScroll.bind(this)));
 
     this.colors = this.projects.map(function(project) {
         return {
             color: project.color,
-            position: project.element.offsetTop / me.element.scrollHeight * 100
+            position: project.element.offsetTop / document.body.scrollHeight * 100
         }
     });
     this.colors.push({
@@ -31,22 +29,22 @@ function Portfolio(element) {
 }
 
 Portfolio.prototype.loopProjectsOnScroll = function(event) {
-    var offsetHeight = this.element.offsetHeight,
-        scrollHeight = this.element.scrollHeight,
-        scrollTop = this.element.scrollTop;
+    var offsetHeight = document.body.offsetHeight,
+        scrollHeight = document.body.scrollHeight,
+        scrollTop = window.scrollY;
 
     if (offsetHeight + scrollTop >= scrollHeight) {
         event.preventDefault();
         this.scrollToProject(1, 'bottom');
-    } else if (this.element.scrollTop === 0) {
+    } else if (scrollTop === 0) {
         event.preventDefault();
         this.scrollToProject(this.projects.length - 2);
     }
 };
 
 Portfolio.prototype.updateColorOnScroll = function() {
-    var scrollHeight = this.element.scrollHeight,
-        scrollTop = this.element.scrollTop,
+    var scrollHeight = document.body.scrollHeight,
+        scrollTop = window.scrollY,
         scrollAmount = scrollTop / scrollHeight * 100,
         relativePos, pos1, pos2, color, color1, color2, i;
 
@@ -70,14 +68,14 @@ Portfolio.prototype.updateColorOnScroll = function() {
                 break;
             }
         }
+
+        // Calculate the relative amount scrolled
+        relativePos = ((scrollAmount - pos1) / (pos2 - pos1));
+
+        // Calculate new color value and set it using setColor
+        color = this.calculateColor(color1, color2, relativePos);
+        this.setColor(color);
     }
-
-    // Calculate the relative amount scrolled
-    relativePos = ((scrollAmount - pos1) / (pos2 - pos1));
-
-    // Calculate new color value and set it using setColor
-    color = this.calculateColor(color1, color2, relativePos);
-    this.setColor(color);
 };
 
 Portfolio.prototype.createProjectCollection = function() {
