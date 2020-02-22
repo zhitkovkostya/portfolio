@@ -22,7 +22,7 @@ function Portfolio(element) {
     });
 
     this.scrollToProject(1);
-    setTimeout(this.updateColorOnScroll.bind(this), 0);
+    setTimeout(this.updateColorOnScroll.bind(this), 50);
 
     window.addEventListener('scroll', throttle(this.updateColorOnScroll.bind(this), 50));
     window.addEventListener('scroll', debounce(this.loopProjectsOnScroll.bind(this)));
