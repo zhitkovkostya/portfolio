@@ -13,6 +13,7 @@ socials:
   Mail: "mailto:zhitkovkostya@gmail.com"
 
 # Build settings
+
 markdown: kramdown
 
 # Exclude from processing.

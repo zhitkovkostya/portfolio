@@ -1,24 +1,24 @@
  <article
         class="project {% if include.is_inverted %} project--inverted {% endif %} js-project"
-        id="{{ post.uid | default: include.uid }}"
+        id="{{ include.uid }}"
         tabindex="0"
-        data-tags="{{ post.tags | default: include.tags | join: ',' }}"
-        data-color="{{ post.color | default: include.color }}"
+        data-tags="{{ include.tags | join: ',' }}"
+        data-color="{{ include.color }}"
 >
     <div class="project__wrapper">
         <header class="project__header js-project-header">
-            <h2 class="project__heading">{{ post.title | default: include.title }}</h2>
+            <h2 class="project__heading">{{ include.title }}</h2>
         </header>
         <div class="project__content">
             <div class="swiper-container js-swiper-container">
                 <div class="swiper-wrapper">
                     <div class="swiper-slide swiper-slide-main js-swiper-slide">
                         <div class="text">
-                            {{ post.excerpt | default: include.excerpt }}
+                            {{ include.excerpt }}
                         </div>
                     </div>
 
-                    {% for image in post.images %}
+                    {% for image in include.images %}
                         <div class="swiper-slide js-swiper-slide">
                             <img src="" data-src="/assets/images/{{ image[0] }}" class="swiper-lazy image" alt="{{ image[1] }}" loading="lazy" />
                             <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>

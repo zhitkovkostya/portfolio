@@ -1,6 +1,5 @@
 ---
 layout: default
-title: Portfolio
 ---
 
 <ul class="portfolio js-portfolio">
@@ -18,16 +17,24 @@ title: Portfolio
         {% endcapture %}
     
         {% include post.html
-           title=page.title
+           title=site.title
            excerpt=excerpt
            uid="info"
            color="000000"
-           is_inverted=1
+           is_inverted=true
         %}
     </li>
     {% for post in site.posts %}
         <li class="portfolio__item js-portfolio-item">
-            {% include post.html %}
+            {% include post.html
+               title=post.title
+               excerpt=post.excerpt
+               uid=post.uid
+               color=post.color
+               tags=post.tags
+               images=post.images
+               is_inverted=false
+            %}
         </li>
     {% endfor %}
 </ul>
