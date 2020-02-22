@@ -1,0 +1,24 @@
+.tag {
+  display: inline;
+  font-size: var(--font-size-tags);
+  font-weight: bold;
+  font-family: var(--font-family);
+  letter-spacing: 0.64rem;
+  text-transform: uppercase;
+  line-height: var(--font-height-huge);
+  white-space: nowrap;
+  color: #fff;
+  opacity: .2;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  pointer-events: none;
+  -webkit-transition: opacity var(--trasnsition);
+  -o-transition: opacity var(--trasnsition);
+  transition: opacity var(--trasnsition);
+
+  &--active {
+    opacity: 1;
+  }
+}

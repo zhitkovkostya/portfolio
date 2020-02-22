@@ -1,0 +1,39 @@
+@media all and (max-width: 767px) {
+  .project__header,
+  .swiper-slide .text {
+    width: 100%;
+  }
+
+  .swiper-slide .image {
+    width: calc(100% - 4rem);
+    height: calc(100% - 4rem);
+  }
+
+  .tag-cloud {
+    opacity: .2;
+    word-spacing: 2rem;
+  }
+}
+
+@media all and (min-width: 768px) {
+  .project__header,
+  .swiper-slide .text {
+    width: 48%;
+  }
+
+  .swiper-slide .image {
+    width: 75%;
+    height: 75%;
+  }
+
+  .tag-cloud {
+    word-spacing: 3.1rem;
+  }
+}
+
+@media all and (min-width: 1440px) {
+  .project__header,
+  .swiper-slide .text {
+    max-width: 310px;
+  }
+}

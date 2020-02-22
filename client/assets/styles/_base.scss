@@ -1,0 +1,29 @@
+* {
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+html {
+  width: 100vw;
+  font-family: var(--font-family);
+  font-size: var(--increment);
+}
+
+body {
+  overflow-y: scroll;
+  overflow-x: hidden;
+  margin: 0;
+  background-color: var(--background-color);
+  -webkit-transition: background-color 150ms;
+  -o-transition: background-color 150ms;
+  transition: background-color 150ms;
+  -webkit-overflow-scrolling: touch;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+p {
+  margin: 0 0 3rem 0;
+}
