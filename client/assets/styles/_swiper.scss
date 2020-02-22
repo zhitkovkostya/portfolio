@@ -1,3 +1,5 @@
+@import "variables";
+
 .swiper-container {
   height: 100%;
   overflow: initial;
@@ -34,14 +36,14 @@
     top: 0;
     padding: 0 5rem;
     opacity: 0;
-    transition: transform var(--trasnsition), opacity var(--trasnsition);
+    transition: transform $transition, opacity $transition;
   }
 
   .image {
     object-fit: contain;
     width: 50%;
     height: 75%;
-    transition: transform var(--trasnsition);
+    transition: transform $transition;
 
     &[src=""] {
       display: none;

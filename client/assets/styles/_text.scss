@@ -1,5 +1,7 @@
+@import "variables";
+
 .text {
-  font-size: var(--font-size-medium);
+  font-size: $font-size-medium;
   font-weight: normal;
-  line-height: var(--font-height-medium);
+  line-height: $font-height-medium;
 }

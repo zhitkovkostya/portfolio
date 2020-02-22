@@ -128,7 +128,7 @@ Portfolio.prototype.setActiveProject = function(project) {
 };
 
 Portfolio.prototype.setColor = function(color) {
-    document.documentElement.style.setProperty('--background-color', color);
+    this.element.style.setProperty('background-color', color);
 };
 
 Portfolio.prototype.calculateColor = function(begin, end, pos) {
@@ -226,11 +226,18 @@ Project.prototype.initObserver = function() {
 };
 
 function TagCloud(element, config) {
+    var me = this;
+
     this.element = element;
     this.tags = this.createTagCollection(config.tags);
 
     this.setActiveTags([]);
-    this.fitText();
+
+    this.hide();
+    document.fonts.ready.then(function() {
+        me.fitText();
+        me.show();
+    });
 
     window.addEventListener('resize', debounce(this.fitText.bind(this), 500));
     window.addEventListener('orientationchange', this.fitText.bind(this));
@@ -284,7 +291,15 @@ TagCloud.prototype.fitText = function() {
 };
 
 TagCloud.prototype.setFontSize = function(fontSize) {
-    document.documentElement.style.setProperty('--font-size-tags', fontSize + 'rem');
+    this.element.style.setProperty('font-size', fontSize + 'rem');
+};
+
+TagCloud.prototype.hide = function() {
+    this.element.classList.add('tag-cloud--hidden');
+};
+
+TagCloud.prototype.show = function() {
+    this.element.classList.remove('tag-cloud--hidden');
 };
 
 function Tag(config) {

@@ -1,17 +1,18 @@
+@import "variables";
+
 .tag {
   display: inline;
-  font-size: var(--font-size-tags);
   font-weight: bold;
-  font-family: var(--font-family);
+  font-family: $font-family;
   letter-spacing: 0.64rem;
   text-transform: uppercase;
-  line-height: var(--font-height-huge);
+  line-height: 1.1;
   white-space: nowrap;
   color: #fff;
   opacity: .2;
   user-select: none;
   pointer-events: none;
-  transition: opacity var(--trasnsition);
+  transition: opacity $transition;
 
   &--active {
     opacity: 1;

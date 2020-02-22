@@ -4,7 +4,14 @@
   padding: 3rem 0 0 0;
   list-style: none;
   word-spacing: 5.1rem;
-  pointer-events: none;
+  font-size: 3rem;
   text-align: right;
+  pointer-events: none;
   user-select: none;
+
+  &--hidden {
+    .tag {
+      opacity: 0;
+    }
+  }
 }
