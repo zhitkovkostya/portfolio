@@ -1,5 +1,4 @@
 * {
-  -webkit-box-sizing: border-box;
   box-sizing: border-box;
 }
 
@@ -14,8 +13,6 @@ body {
   overflow-x: hidden;
   margin: 0;
   background-color: var(--background-color);
-  -webkit-transition: background-color 150ms;
-  -o-transition: background-color 150ms;
   transition: background-color 150ms;
   -webkit-overflow-scrolling: touch;
 

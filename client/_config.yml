@@ -17,6 +17,8 @@ socials:
 markdown: kramdown
 sass:
   sass_dir: assets/styles
+autoprefixer:
+  only_production: true
 
 # Exclude from processing.
 

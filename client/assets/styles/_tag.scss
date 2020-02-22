@@ -9,13 +9,8 @@
   white-space: nowrap;
   color: #fff;
   opacity: .2;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
   user-select: none;
   pointer-events: none;
-  -webkit-transition: opacity var(--trasnsition);
-  -o-transition: opacity var(--trasnsition);
   transition: opacity var(--trasnsition);
 
   &--active {
