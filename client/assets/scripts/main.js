@@ -14,7 +14,7 @@ function Portfolio(element) {
         return {
             color: project.color,
             position: project.element.offsetTop / document.body.scrollHeight * 100
-        }
+        };
     });
     this.colors.push({
         color: this.projects[2].color,
@@ -186,13 +186,19 @@ Project.prototype.initSwiper = function() {
 
 Project.prototype.alignTextContent = function() {
     var headerElement = this.element.querySelector('.js-project-header'),
-        textElements = this.element.querySelectorAll('.text');
+        textElements = this.element.querySelectorAll('.text'),
+        textElementsCount = textElements.length,
+        textElement, i;
+
+    for (i = 0; i < textElementsCount; i++) {
+        textElement = textElements[i];
+
+        textElement.style.top = headerElement.offsetHeight + 'px';
+        textElement.style.opacity = '1';
+    }
 
     textElements.forEach(function(textElement) {
-        if (textElement) {
-            textElement.style.top = headerElement.offsetHeight + 'px';
-            textElement.style.opacity = '1';
-        }
+
     });
 };
 
@@ -202,7 +208,9 @@ Project.prototype.alignTextContent = function() {
  * @returns {*}
  */
 Project.prototype.getRGBA = function(hex) {
-    return hex.toLowerCase().match(/[0-9a-f]{2}/g).map(number => parseInt(number, 16));
+    return hex.toLowerCase().match(/[0-9a-f]{2}/g).map(function(number) {
+        return parseInt(number, 16);
+    });
 };
 
 Project.prototype.initObserver = function() {
@@ -297,13 +305,13 @@ function throttle(fn, wait) {
 
     return function() {
         if ((time + wait - Date.now()) < 0) {
-            fn(...arguments);
+            fn.apply(void 0, arguments);
             time = Date.now();
         }
-    }
+    };
 }
 
-var debounce = function (fn) {
+function debounce(fn) {
     var timeout;
 
     return function () {
@@ -317,5 +325,5 @@ var debounce = function (fn) {
         timeout = window.requestAnimationFrame(function () {
             fn.apply(context, args);
         });
-    }
+    };
 };
