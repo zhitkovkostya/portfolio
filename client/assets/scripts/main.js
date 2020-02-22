@@ -196,10 +196,6 @@ Project.prototype.alignTextContent = function() {
         textElement.style.top = headerElement.offsetHeight + 'px';
         textElement.style.opacity = '1';
     }
-
-    textElements.forEach(function(textElement) {
-
-    });
 };
 
 /**
