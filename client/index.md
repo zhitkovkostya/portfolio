@@ -33,6 +33,7 @@ layout: default
                color=post.color
                tags=post.tags
                images=post.images
+               links=post.links
                is_inverted=false
             %}
         </li>

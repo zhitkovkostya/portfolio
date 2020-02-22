@@ -1,7 +1,9 @@
 @import "variables";
 
 .link {
+  display: block;
   min-width: auto;
+  margin-bottom: 1rem;
   font-size: $font-size-medium;
   font-weight: bold;
   font-family: $font-family;

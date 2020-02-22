@@ -15,6 +15,10 @@
                     <div class="swiper-slide swiper-slide-main js-swiper-slide">
                         <div class="text">
                             {{ include.excerpt }}
+
+                            {% for link in include.links %}
+                                <a href="{{ link[0] }}" target="_blank" class="link">{{ link[1] }}</a>
+                            {% endfor %}
                         </div>
                     </div>
 
