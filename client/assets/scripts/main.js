@@ -160,6 +160,8 @@ Project.prototype.initSwiper = function() {
         swiperOptions = {
             loop: swiperElement.querySelectorAll('.js-swiper-slide').length > 1,
             watchOverflow: true,
+            preloadImages: false,
+            lazy: true,
             effect: 'fade',
             fadeEffect: {
                 crossFade: true
@@ -210,6 +212,7 @@ Project.prototype.initObserver = function() {
 
             if (entry.isIntersecting && entry.intersectionRatio > 0) {
                 me.portfolio.setActiveProject(me);
+                me.swiper.lazy.load();
             }
         }, {
             threshold: [0.3]

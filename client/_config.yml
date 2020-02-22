@@ -1,0 +1,27 @@
+# Site settings
+
+title: Konstantin Zhitkov Portfolio v1.0
+email: zhitkovkostya@gmail.com
+description: "Showcase of works and experiments  by Konstantin Zhitkov, front-end developer from
+  Saint-Petersburg, Russia."
+baseurl: ""
+url: "https://zhikov.me"
+socials:
+  GIT:  "https://github.com/zhitkovkostya"
+  IN: "https://linkedin.com/in/zhitkovkostya"
+  IG: "https://instagram.com/zhitkovkostya"
+  Mail: "mailto:zhitkovkostya@gmail.com"
+
+# Build settings
+markdown: kramdown
+
+# Exclude from processing.
+
+# exclude:
+# - node_modules
+# - Gemfile
+# - Gemfile.lock
+# - vendor/bundle/
+# - vendor/cache/
+# - vendor/gems/
+# - vendor/ruby/
