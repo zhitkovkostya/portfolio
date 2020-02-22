@@ -228,7 +228,7 @@ function TagCloud(element, config) {
     this.setActiveTags([]);
     this.fitText();
 
-    window.addEventListener('resize', this.fitText.bind(this));
+    window.addEventListener('resize', debounce(this.fitText.bind(this), 500));
     window.addEventListener('orientationchange', this.fitText.bind(this));
 };
 
@@ -267,13 +267,15 @@ TagCloud.prototype.fitText = function() {
     var parentHeight = this.element.parentElement.offsetHeight,
         fontSize = 3;
 
+    this.setFontSize(fontSize.toFixed(2));
+
     while (this.element.offsetHeight < parentHeight) {
         fontSize += 0.1;
         this.setFontSize(fontSize.toFixed(2));
     }
 
     if (this.element.offsetHeight > parentHeight) {
-        this.setFontSize(fontSize - 0.1);
+        this.setFontSize((fontSize - 0.1).toFixed(2));
     }
 };
 
