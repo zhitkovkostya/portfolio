@@ -10,12 +10,6 @@ function Portfolio(element) {
     this.element = element;
     this.projects = this.createProjectCollection();
     this.tagCloud = this.initTagCloud();
-
-    this.scrollToProject(1);
-
-    window.addEventListener('scroll', throttle(this.updateColorOnScroll.bind(this), 50));
-    window.addEventListener('scroll', debounce(this.loopProjectsOnScroll.bind(this)));
-
     this.colors = this.projects.map(function(project) {
         return {
             color: project.color,
@@ -26,6 +20,12 @@ function Portfolio(element) {
         color: this.projects[2].color,
         position: 100
     });
+
+    this.scrollToProject(1);
+    setTimeout(this.updateColorOnScroll.bind(this), 0);
+
+    window.addEventListener('scroll', throttle(this.updateColorOnScroll.bind(this), 50));
+    window.addEventListener('scroll', debounce(this.loopProjectsOnScroll.bind(this)));
 }
 
 Portfolio.prototype.loopProjectsOnScroll = function(event) {

@@ -4,7 +4,7 @@
   "description": "Showcase of works and experiments by Konstantin Zhitkov, front-end developer from Saint-Petersburg, Russia.",
   "main": "index.js",
   "scripts": {
-    "start": "cd ./client && bundle exec jekyll serve --incremental",
+    "start": "cd ./client && bundle exec jekyll serve",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
