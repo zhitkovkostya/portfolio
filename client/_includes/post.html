@@ -17,7 +17,7 @@
                             {{ include.excerpt }}
 
                             {% for link in include.links %}
-                                <a href="{{ link[0] }}" target="_blank" class="link">{{ link[1] }}</a>
+                                <a href="{{ link[0] }}" class="link" target="_blank" rel="noopener">{{ link[1] }}</a>
                             {% endfor %}
                         </div>
                     </div>
