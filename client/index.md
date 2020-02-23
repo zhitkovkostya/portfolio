@@ -10,7 +10,7 @@ layout: default
             <ul class="socials">
                 {% for social in site.socials %}
                     <li class="socials__item">
-                        <a href="{{ social[1] }}" class="button button--white" target="_blank">{{ social[0] }}</a>
+                        <a href="{{ social[1] }}" class="button button--white" target="_blank" rel="noopener">{{ social[0] }}</a>
                     </li>
                 {% endfor %}
             </ul>  
