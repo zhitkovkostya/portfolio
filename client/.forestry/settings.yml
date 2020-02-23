@@ -10,7 +10,7 @@ sections:
 upload_dir: client/assets/images
 public_path: "/assets/images"
 front_matter_path: ''
-use_front_matter_path: false
+use_front_matter_path: 
 file_template: ":filename:"
 build:
   preview_env:
