@@ -1,30 +1,67 @@
 @import "variables";
 
 .swiper-container {
-  height: 100%;
   overflow: initial;
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0;
+  list-style: none;
+}
+
+.swiper-container-fade {
+  .swiper-slide {
+    pointer-events: none;
+    transition-property: opacity;
+  }
+
+  .swiper-slide-active {
+    pointer-events: auto;
+    transition-property: opacity;
+  }
 }
 
 .swiper-wrapper {
+  box-sizing: content-box;
   overflow-x: hidden;
-}
-
-.swiper-container-horizontal {
-  & > .swiper-pagination-bullets {
-    bottom: 5rem;
-  }
+  position: relative;
+  z-index: 1;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  transform: translate3d(0, 0, 0);
+  transition-property: transform;
 }
 
 .swiper-pagination {
   position: sticky;
   padding: 40rem 5rem 0 5rem;
   text-align: left;
+  transition: .3s opacity;
+}
+
+.swiper-pagination-lock {
+  display: none;
+}
+
+.swiper-pagination-bullets {
+  z-index: 10;
+  transform: translate3d(0, 0, 0);
+  bottom: 5rem;
+  left: 0;
+  width: 100%;
+  transition: .3s opacity;
 }
 
 .swiper-slide {
+  position: relative;
   display: flex;
+  flex-shrink: 0;
   justify-content: center;
   align-items: center;
+  height: 100%;
 
   &-main {
     justify-content: flex-start;
@@ -63,4 +100,36 @@
   .image {
     transform: translate3d(10rem, 0, 0);
   }
+}
+
+.swiper-lazy-preloader {
+  width: 42px;
+  height: 42px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin-left: -21px;
+  margin-top: -21px;
+  z-index: 10;
+  transform-origin: 50%;
+  animation: spin 1s infinite linear;
+  box-sizing: border-box;
+  border: 4px solid #fff;
+  border-radius: 50%;
+  border-top-color: transparent;
+}
+
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.swiper-notification {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: -1000;
+  opacity: 0;
+  pointer-events: none;
 }
