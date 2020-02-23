@@ -7,9 +7,8 @@ sections:
 - type: jekyll-posts
   label: Projects
   create: all
-  match: "**/*"
-upload_dir: client/uploads
-public_path: "/uploads"
+upload_dir: client/assets/images
+public_path: "/assets/images"
 front_matter_path: ''
 use_front_matter_path: false
 file_template: ":filename:"
