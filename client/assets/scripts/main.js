@@ -152,6 +152,8 @@ function Project(element, config) {
     this.tags = this.element.dataset.tags ? this.element.dataset.tags.split(',') : [];
     this.color = this.getRGBA(this.element.dataset.color);
 
+    this.element.swiper = this.swiper;
+
     this.initObserver();
 }
 
@@ -161,7 +163,10 @@ Project.prototype.initSwiper = function() {
             loop: swiperElement.querySelectorAll('.js-swiper-slide').length > 1,
             watchOverflow: true,
             preloadImages: false,
-            lazy: true,
+            lazy: {
+                loadOnTransitionStart: true,
+                elementClass: 'image--lazy'
+            },
             effect: 'fade',
             fadeEffect: {
                 crossFade: true

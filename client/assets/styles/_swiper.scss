@@ -36,7 +36,7 @@
     top: 0;
     padding: 0 5rem;
     opacity: 0;
-    transition: transform $transition, opacity $transition;
+    transition: opacity $transition;
   }
 
   .image {
