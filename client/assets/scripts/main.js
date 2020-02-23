@@ -238,10 +238,8 @@ function TagCloud(element, config) {
 
     this.setActiveTags([]);
 
-    this.hide();
     document.fonts.ready.then(function() {
         me.fitText();
-        me.show();
     });
 
     window.addEventListener('resize', debounce(this.fitText.bind(this), 500));
@@ -297,14 +295,6 @@ TagCloud.prototype.fitText = function() {
 
 TagCloud.prototype.setFontSize = function(fontSize) {
     this.element.style.setProperty('font-size', fontSize + 'rem');
-};
-
-TagCloud.prototype.hide = function() {
-    this.element.classList.add('tag-cloud--hidden');
-};
-
-TagCloud.prototype.show = function() {
-    this.element.classList.remove('tag-cloud--hidden');
 };
 
 function Tag(config) {
