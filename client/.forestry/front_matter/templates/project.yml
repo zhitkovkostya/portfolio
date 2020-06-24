@@ -17,23 +17,6 @@ fields:
 - type: field_group
   name: images
   label: images
-  fields:
-  - type: text
-    name: viberoom-1.jpg
-    label: viberoom-1.jpg
-  - type: text
-    name: viberoom-2.jpg
-    label: viberoom-2.jpg
-  - type: text
-    name: viberoom-3.jpg
-    label: viberoom-3.jpg
 - type: field_group
   name: links
   label: links
-  fields:
-  - type: text
-    name: https://viberoom.audio
-    label: https://viberoom.audio
-  - type: text
-    name: https://apps.apple.com/us/app/chillhop-radio-relax-yourself/id1479329939?mt=8
-    label: https://apps.apple.com/us/app/chillhop-radio-relax-yourself/id1479329939?mt=8
