@@ -11,6 +11,12 @@ fields:
 - type: text
   name: color
   label: color
+- name: color2
+  type: color
+  config:
+    required: false
+    color_format: Hex
+  label: Color
 - type: list
   name: tags
   label: tags
