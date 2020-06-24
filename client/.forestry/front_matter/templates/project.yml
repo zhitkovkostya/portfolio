@@ -14,10 +14,10 @@ fields:
 - type: list
   name: tags
   label: tags
-- name: images
+- name: images2
   type: image_gallery
   config: {}
-  label: images
+  label: images2
 - type: field_group
   name: links
   label: links
