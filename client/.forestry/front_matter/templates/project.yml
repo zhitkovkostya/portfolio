@@ -14,10 +14,11 @@ fields:
 - type: list
   name: tags
   label: tags
-- name: images2
-  type: image_gallery
-  config: {}
-  label: images2
 - type: field_group
   name: links
   label: links
+- name: images2
+  type: include
+  config: {}
+  template: image
+  label: Images
