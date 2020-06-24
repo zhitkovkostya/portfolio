@@ -18,7 +18,9 @@ fields:
   name: links
   label: links
 - name: images2
-  type: include
-  config: {}
-  template: image
+  type: field_group_list
+  config:
+    min: 
+    max: 
+    labelField: 
   label: Images
