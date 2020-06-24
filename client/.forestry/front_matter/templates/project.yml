@@ -14,8 +14,9 @@ fields:
 - type: list
   name: tags
   label: tags
-- type: field_group
-  name: images
+- name: images
+  type: image_gallery
+  config: {}
   label: images
 - type: field_group
   name: links
