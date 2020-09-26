@@ -19,6 +19,10 @@ node_modules/
 .npm
 
 
+# MacOS
+client/assets/.DS_Store
+
+
 # Storybook build outputs
 .out
 .storybook-out
