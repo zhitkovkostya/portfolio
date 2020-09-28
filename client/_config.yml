@@ -19,8 +19,6 @@ sass:
   sass_dir: assets/styles
 autoprefixer:
   only_production: true
-plugins:
-  - jekyll-admin
 
 # Exclude from processing.
 
