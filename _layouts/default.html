@@ -9,7 +9,6 @@
     <meta name="description" content="{{ site.description }}" />
     <link rel="icon" href="favicon.ico">
     <link href="/assets/styles/main.css" rel="stylesheet" />
-    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 </head>
 <body>
     <aside class="aside">
@@ -21,16 +20,5 @@
 
     <script src="/assets/libs/swiper/swiper.min.js"></script>
     <script src="/assets/scripts/main.js"></script>
-    <script>
-        if (window.netlifyIdentity) {
-            window.netlifyIdentity.on("init", user => {
-                if (!user) {
-                    window.netlifyIdentity.on("login", () => {
-                        document.location.href = "/admin/";
-                    });
-                }
-            });
-        }
-    </script>
 </body>
 </html>
