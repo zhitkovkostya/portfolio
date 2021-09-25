@@ -10,10 +10,10 @@
             <h2 class="project__heading">{{ include.title }}</h2>
         </header>
         <div class="project__content">
-            <div class="swiper-container js-swiper-container">
+            <div class="swiper js-swiper">
                 <div class="swiper-wrapper">
                     <div class="swiper-slide swiper-slide-main js-swiper-slide">
-                        <div class="text">
+                        <div class="text js-text">
                             {{ include.excerpt }}
 
                             {% for link in include.links %}

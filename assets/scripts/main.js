@@ -158,10 +158,12 @@ function Project(element, config) {
 }
 
 Project.prototype.initSwiper = function() {
-    var swiperElement = this.element.querySelector('.js-swiper-container'),
+    var swiperElement = this.element.querySelector('.js-swiper'),
         swiperOptions = {
             loop: swiperElement.querySelectorAll('.js-swiper-slide').length > 1,
             watchOverflow: true,
+            resizeObserver: true,
+            watchSlidesProgress: true,
             preloadImages: false,
             lazy: {
                 loadOnTransitionStart: true,
@@ -174,7 +176,7 @@ Project.prototype.initSwiper = function() {
             followFinger: false,
             pagination: {
                 type: 'bullets',
-                el: swiperElement.querySelector('.swiper-pagination'),
+                el: swiperElement.querySelector('.js-swiper-pagination'),
                 clickable: true,
                 bulletElement: 'button',
                 bulletClass: 'button',
@@ -191,7 +193,7 @@ Project.prototype.initSwiper = function() {
 
 Project.prototype.alignTextContent = function() {
     var headerElement = this.element.querySelector('.js-project-header'),
-        textElements = this.element.querySelectorAll('.text'),
+        textElements = this.element.querySelectorAll('.js-text'),
         textElementsCount = textElements.length,
         textElement, i;
 
