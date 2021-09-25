@@ -31,6 +31,7 @@ client/assets/.DS_Store
 
 
 # Jekyll
-_site
 .sass-cache
 .jekyll-metadata
+_site
+vendor
