@@ -2,8 +2,7 @@
 
 title: Konstantin Zhitkov Portfolio v1.0
 email: zhitkovkostya@gmail.com
-description: "Showcase of works and experiments  by Konstantin Zhitkov, front-end developer from
-  Saint-Petersburg, Russia."
+description: "Showcase of works and experiments by Konstantin Zhitkov, front-end developer from Saint-Petersburg, Russia."
 baseurl: ""
 url: "https://zhikov.me"
 socials:
@@ -22,11 +21,11 @@ autoprefixer:
 
 # Exclude from processing.
 
-# exclude:
-# - node_modules
-# - Gemfile
-# - Gemfile.lock
-# - vendor/bundle/
-# - vendor/cache/
-# - vendor/gems/
-# - vendor/ruby/
+exclude:
+- node_modules
+- vendor
+- README.md
+- package.json
+- package-lock.json
+- Gemfile
+- Gemfile.lock

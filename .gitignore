@@ -1,5 +1,6 @@
 # IDE
 .idea
+.history
 
 
 # Logs
@@ -20,9 +21,17 @@ node_modules/
 
 
 # MacOS
-client/assets/.DS_Store
+.DS_Store
+assets/.DS_Store
 
 
 # Storybook build outputs
 .out
 .storybook-out
+
+
+# Jekyll
+.sass-cache
+.jekyll-metadata
+_site
+vendor/
