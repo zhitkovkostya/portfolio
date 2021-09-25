@@ -1,6 +1,6 @@
 @import "variables";
 
-.swiper-container {
+.swiper {
   overflow: initial;
   position: relative;
   z-index: 1;
@@ -11,7 +11,7 @@
   list-style: none;
 }
 
-.swiper-container-fade {
+.swiper-fade {
   .swiper-slide {
     pointer-events: none;
     transition-property: opacity;
@@ -37,7 +37,8 @@
 
 .swiper-pagination {
   position: sticky;
-  padding: 40rem 5rem 0 5rem;
+  display: inline-flex;
+  margin: 40rem 0 0 0;
   text-align: left;
   transition: .3s opacity;
 }
@@ -50,8 +51,7 @@
   z-index: 10;
   transform: translate3d(0, 0, 0);
   bottom: 5rem;
-  left: 0;
-  width: 100%;
+  left: 5rem;
   transition: .3s opacity;
 }
 
@@ -73,7 +73,7 @@
     top: 0;
     padding: 0 5rem;
     opacity: 0;
-    transition: opacity $transition;
+    transition: opacity $transition, transform $transition;
   }
 
   .image {
@@ -83,22 +83,40 @@
     transition: transform $transition;
 
     &[src=""] {
-      display: none;
+      opacity: 0;
     }
   }
 }
 
 .swiper-slide-prev {
-  .text,
+  .text {
+    transform: translate3d(-5rem, 0, 0);
+  }
+
   .image {
     transform: translate3d(-10rem, 0, 0);
   }
 }
 
 .swiper-slide-next {
-  .text,
+  .text {
+    transform: translate3d(5rem, 0, 0);
+  }
+
   .image {
     transform: translate3d(10rem, 0, 0);
+  }
+}
+
+.swiper-slide-duplicate-prev {
+  .text {
+    transform: translate3d(5rem, 0, 0);
+  }
+}
+
+.swiper-slide-duplicate-next {
+  .text {
+    transform: translate3d(5rem, 0, 0);
   }
 }
 
