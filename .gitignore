@@ -22,7 +22,7 @@ node_modules/
 
 # MacOS
 .DS_Store
-client/assets/.DS_Store
+assets/.DS_Store
 
 
 # Storybook build outputs
@@ -34,4 +34,4 @@ client/assets/.DS_Store
 .sass-cache
 .jekyll-metadata
 _site
-vendor
+vendor/
