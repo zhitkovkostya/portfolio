@@ -37,22 +37,17 @@
 
 .swiper-pagination {
   position: sticky;
-  display: inline-flex;
-  margin: 40rem 0 0 0;
+  margin-top: 40rem;
+  margin-left: 5rem;
+  z-index: 10;
+  transform: translate3d(0, 0, 0);
+  bottom: 5rem;
   text-align: left;
   transition: .3s opacity;
 }
 
 .swiper-pagination-lock {
   display: none;
-}
-
-.swiper-pagination-bullets {
-  z-index: 10;
-  transform: translate3d(0, 0, 0);
-  bottom: 5rem;
-  left: 5rem;
-  transition: .3s opacity;
 }
 
 .swiper-slide {
