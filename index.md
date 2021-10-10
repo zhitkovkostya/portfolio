@@ -19,7 +19,7 @@ layout: default
         {% include post.html
            title=site.title
            excerpt=excerpt
-           uid="info"
+           slug="info"
            color="000000"
            is_inverted=true
         %}
