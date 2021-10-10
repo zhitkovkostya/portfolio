@@ -1,7 +1,9 @@
 backend:
   name: git-gateway
   branch: master
+publish_mode: editorial_workflow
 media_folder: "assets/images"
+site_url: https://zhitkov.me
 collections:
   - name: project
     label: Projects
@@ -30,19 +32,9 @@ collections:
         allow_add: true
       - label: Links
         name: links
-        widget: list 
+        widget: list
         allow_add: true
-        fields:
-          - label: URL
-            name: url
-            widget: string
-          - label: Title
-            name: title
-            widget: string
-      - label: Videos
-        name: videos
-        widget: list 
-        allow_add: true
+        summary: '{{fields.title}}'
         fields:
           - label: URL
             name: url
@@ -54,6 +46,7 @@ collections:
         name: images
         widget: list
         allow_add: true
+        summary: '{{fields.title}}'
         fields:
           - label: Image
             name: url

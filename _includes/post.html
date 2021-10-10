@@ -14,7 +14,7 @@
                     <div class="swiper-slide swiper-slide-main js-swiper-slide">
                         <div class="text js-text">
                             {{ include.excerpt }}
-
+{{include.post}}
                             {% for link in include.links %}
                                 <a href="{{ link.url }}" class="link" target="_blank" rel="noopener">{{ link.title }}</a>
                             {% endfor %}

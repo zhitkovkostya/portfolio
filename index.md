@@ -27,9 +27,9 @@ layout: default
     {% for post in site.posts %}
         <li class="portfolio__item js-portfolio-item">
             {% include post.html
+               slug=post.slug
                title=post.title
                excerpt=post.excerpt
-               uid=post.uid
                color=post.color
                tags=post.tags
                images=post.images
