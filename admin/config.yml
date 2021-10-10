@@ -1,0 +1,66 @@
+backend:
+  name: git-gateway
+  branch: main
+media_folder: "assets/images"
+collections:
+  - name: project
+    label: Projects
+    folder: "_posts/"
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    create: true
+    editor:
+      preview: false
+    fields:
+      - label: UID
+        name: uid
+        widget: string
+      - label: Title
+        name: title
+        widget: string
+      - label: Date
+        name: date
+        widget: datetime
+      - label: Color
+        name: color
+        widget: color
+        allowInput: true
+      - label: Tags
+        name: tags
+        widget: list
+        allow_add: true
+      - label: Links
+        name: links
+        widget: list 
+        allow_add: true
+        fields:
+          - label: URL
+            name: url
+            widget: string
+          - label: Title
+            name: title
+            widget: string
+      - label: Videos
+        name: videos
+        widget: list 
+        allow_add: true
+        fields:
+          - label: URL
+            name: url
+            widget: string
+          - label: Title
+            name: title
+            widget: string
+      - label: Images
+        name: images
+        widget: list
+        allow_add: true
+        fields:
+          - label: Image
+            name: url
+            widget: image
+          - label: Title
+            name: title
+            widget: string
+      - label: Body
+        name: body
+        widget: text
