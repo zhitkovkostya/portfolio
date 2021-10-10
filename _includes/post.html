@@ -16,14 +16,14 @@
                             {{ include.excerpt }}
 
                             {% for link in include.links %}
-                                <a href="{{ link[0] }}" class="link" target="_blank" rel="noopener">{{ link[1] }}</a>
+                                <a href="{{ link.url }}" class="link" target="_blank" rel="noopener">{{ link.title }}</a>
                             {% endfor %}
                         </div>
                     </div>
 
                     {% for image in include.images %}
                         <div class="swiper-slide js-swiper-slide">
-                            <img src="" data-src="/assets/images/{{ image[0] }}" class="image image--lazy" alt="{{ image[1] }}" />
+                            <img src="" data-src="{{ image.url }}" class="image image--lazy" alt="{{ image.title }}" />
                             <div class="swiper-lazy-preloader"></div>
                         </div>
                     {% endfor %}
