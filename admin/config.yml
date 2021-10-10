@@ -13,9 +13,6 @@ collections:
     editor:
       preview: false
     fields:
-      - label: UID
-        name: uid
-        widget: string
       - label: Title
         name: title
         widget: string
