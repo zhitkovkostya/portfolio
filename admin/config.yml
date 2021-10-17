@@ -3,6 +3,7 @@ backend:
   branch: master
 media_folder: "assets/images"
 site_url: https://zhitkov.me
+logo_url: https://zhitkov.me/admin/assets/images/admin-logo.svg
 collections:
   - name: project
     label: Projects
