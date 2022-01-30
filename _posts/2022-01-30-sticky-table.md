@@ -1,6 +1,6 @@
 ---
 title: Sticky Table
-date: 2022-01-30T14:43:36.415Z
+date: 2018-08-01T00:00:00.000Z
 color: "#DAB785"
 tags:
   - a11y
