@@ -1,8 +1,4 @@
 (function() {
-    if (history.scrollRestoration) {
-        history.scrollRestoration = 'manual';
-    }
-
     document.addEventListener('DOMContentLoaded', initPortfolio);
 
     function initPortfolio() {
