@@ -26,6 +26,8 @@ function Portfolio(element) {
 
     window.addEventListener('scroll', throttle(this.updateColorOnScroll.bind(this), 50));
     window.addEventListener('scroll', debounce(this.loopProjectsOnScroll.bind(this)));
+
+    this.initResizeObserver();
 }
 
 Portfolio.prototype.loopProjectsOnScroll = function(event) {
@@ -129,6 +131,37 @@ Portfolio.prototype.setActiveProject = function(project) {
 
 Portfolio.prototype.setColor = function(color) {
     this.element.style.setProperty('background-color', color);
+};
+
+Portfolio.prototype.initResizeObserver = function() {
+    var me = this;
+
+    var resizeObserver = new ResizeObserver(debounce(function() {
+        me.recalculateColorPositions();
+        me.updateColorOnScroll();
+        me.realignAllProjectText();
+    }));
+
+    resizeObserver.observe(document.documentElement);
+};
+
+Portfolio.prototype.realignAllProjectText = function() {
+    this.projects.forEach(function(project) {
+        project.alignTextContent();
+    });
+};
+
+Portfolio.prototype.recalculateColorPositions = function() {
+    this.colors = this.projects.map(function(project) {
+        return {
+            color: project.color,
+            position: project.element.offsetTop / document.body.scrollHeight * 100
+        };
+    });
+    this.colors.push({
+        color: this.projects[2].color,
+        position: 100
+    });
 };
 
 Portfolio.prototype.calculateColor = function(begin, end, pos) {
