@@ -31,14 +31,18 @@ function Portfolio(element) {
 }
 
 Portfolio.prototype.loopProjectsOnScroll = function(event) {
-    var offsetHeight = window.innerHeight,
+    var SCROLL_THRESHOLD = 100,
+        ELEMENT_VISIBILITY_OFFSET = 100,
+        offsetHeight = window.innerHeight,
         scrollHeight = document.body.scrollHeight,
-        scrollTop = window.scrollY;
+        scrollTop = window.scrollY,
+        firstProjectRect = this.projects[0].element.getBoundingClientRect(),
+        lastProjectRect = this.projects[this.projects.length - 1].element.getBoundingClientRect();
 
-    if (offsetHeight + scrollTop >= scrollHeight) {
+    if (offsetHeight + scrollTop >= scrollHeight && lastProjectRect.bottom < offsetHeight + ELEMENT_VISIBILITY_OFFSET) {
         event.preventDefault();
         this.scrollToProject(1, 'bottom');
-    } else if (scrollTop <= 1) {
+    } else if (scrollTop <= SCROLL_THRESHOLD && firstProjectRect.top > -ELEMENT_VISIBILITY_OFFSET) {
         event.preventDefault();
         this.scrollToProject(this.projects.length - 2);
     }
