@@ -10,6 +10,7 @@ function Portfolio(element) {
     this.element = element;
     this.projects = this.createProjectCollection();
     this.tagCloud = this.initTagCloud();
+    this.loopEnabled = false;
     this.colors = this.projects.map(function(project) {
         return {
             color: project.color,
@@ -23,6 +24,7 @@ function Portfolio(element) {
 
     this.scrollToProject(1);
     setTimeout(this.updateColorOnScroll.bind(this), 50);
+    setTimeout(this.enableLoop.bind(this), 1000);
 
     window.addEventListener('scroll', throttle(this.updateColorOnScroll.bind(this), 50));
     window.addEventListener('scroll', debounce(this.loopProjectsOnScroll.bind(this)));
@@ -31,18 +33,22 @@ function Portfolio(element) {
 }
 
 Portfolio.prototype.loopProjectsOnScroll = function(event) {
+    if (!this.loopEnabled) {
+        return;
+    }
+
     var SCROLL_THRESHOLD = 100,
         ELEMENT_VISIBILITY_OFFSET = 100,
         offsetHeight = window.innerHeight,
         scrollHeight = document.body.scrollHeight,
         scrollTop = window.scrollY,
-        firstProjectRect = this.projects[0].element.getBoundingClientRect(),
-        lastProjectRect = this.projects[this.projects.length - 1].element.getBoundingClientRect();
+        firstOriginalProjectRect = this.projects[1].element.getBoundingClientRect(),
+        lastOriginalProjectRect = this.projects[this.projects.length - 2].element.getBoundingClientRect();
 
-    if (offsetHeight + scrollTop >= scrollHeight && lastProjectRect.bottom < offsetHeight + ELEMENT_VISIBILITY_OFFSET) {
+    if (offsetHeight + scrollTop >= scrollHeight && lastOriginalProjectRect.bottom < offsetHeight + ELEMENT_VISIBILITY_OFFSET) {
         event.preventDefault();
         this.scrollToProject(1, 'bottom');
-    } else if (scrollTop <= SCROLL_THRESHOLD && firstProjectRect.top > -ELEMENT_VISIBILITY_OFFSET) {
+    } else if (scrollTop <= SCROLL_THRESHOLD && firstOriginalProjectRect.top > -ELEMENT_VISIBILITY_OFFSET) {
         event.preventDefault();
         this.scrollToProject(this.projects.length - 2);
     }
@@ -135,6 +141,10 @@ Portfolio.prototype.setActiveProject = function(project) {
 
 Portfolio.prototype.setColor = function(color) {
     this.element.style.setProperty('background-color', color);
+};
+
+Portfolio.prototype.enableLoop = function() {
+    this.loopEnabled = true;
 };
 
 Portfolio.prototype.initResizeObserver = function() {
