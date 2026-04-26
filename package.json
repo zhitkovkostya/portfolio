@@ -4,7 +4,7 @@
   "description": "Showcase of works and experiments by Konstantin Zhitkov, front-end developer from Saint-Petersburg, Russia.",
   "main": "index.js",
   "scripts": {
-    "start": "docker-compose up -d",
+    "start": "docker-compose up",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
