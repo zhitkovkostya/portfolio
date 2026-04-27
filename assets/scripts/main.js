@@ -31,6 +31,7 @@ function Portfolio(element) {
         requestAnimationFrame(function() {
             me.scrollToProject(1);
             me.updateColorOnScroll();
+            me.initializeObservers();
         });
     });
     setTimeout(this.enableLoop.bind(this), 1000);
@@ -108,9 +109,11 @@ Portfolio.prototype.createProjectCollection = function() {
 };
 
 Portfolio.prototype.createProjectModel = function(element) {
-    return new Project(element, {
+    var project = new Project(element, {
         portfolio: this
     });
+    project.observerInitialized = false;
+    return project;
 };
 
 Portfolio.prototype.cloneElements = function() {
@@ -154,6 +157,15 @@ Portfolio.prototype.enableLoop = function() {
     this.loopEnabled = true;
 };
 
+Portfolio.prototype.initializeObservers = function() {
+    this.projects.forEach(function(project) {
+        if (!project.observerInitialized) {
+            project.initObserver();
+            project.observerInitialized = true;
+        }
+    });
+};
+
 Portfolio.prototype.initResizeObserver = function() {
     var me = this;
 
@@ -194,12 +206,9 @@ Portfolio.prototype.calculateColor = function(begin, end, pos) {
 
 Portfolio.prototype.scrollToProject = function(index, position) {
     var position = position || 'top',
-        project = this.projects[index],
-        scrollTop = position === 'top'
-            ? project.element.offsetTop
-            : project.element.offsetTop - this.element.clientHeight + project.element.offsetHeight;
+        project = this.projects[index];
 
-    this.element.scrollTop = scrollTop;
+    project.element.scrollIntoView(position === 'top');
 };
 
 function Project(element, config) {
