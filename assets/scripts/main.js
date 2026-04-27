@@ -31,12 +31,18 @@ function Portfolio(element) {
         requestAnimationFrame(function() {
             me.scrollToProject(1);
             me.updateColorOnScroll();
+            me.updateActiveProject();
             me.initializeObservers();
         });
     });
     setTimeout(this.enableLoop.bind(this), 1000);
 
-    this.element.addEventListener('scroll', throttle(this.updateColorOnScroll.bind(this), 50), { passive: true });
+    var me = this;
+    var updateOnScroll = function() {
+        me.updateColorOnScroll();
+        me.updateActiveProject();
+    };
+    this.element.addEventListener('scroll', throttle(updateOnScroll, 50), { passive: true });
     this.element.addEventListener('scroll', debounce(this.loopProjectsOnScroll.bind(this)), { passive: true });
 
     this.initResizeObserver();
@@ -164,6 +170,27 @@ Portfolio.prototype.initializeObservers = function() {
             project.observerInitialized = true;
         }
     });
+};
+
+Portfolio.prototype.updateActiveProject = function() {
+    // We use scroll position calculation instead of IntersectionObserver because:
+    // 1. IntersectionObserver with custom root doesn't work reliably in Instagram WebView
+    // 2. We already track scroll position for color updates, reusing it is simpler
+    // 3. Direct calculation ensures consistent behavior across all browsers/WebViews
+    var scrollTop = this.element.scrollTop,
+        clientHeight = this.element.clientHeight,
+        mid = scrollTop + clientHeight / 2;
+
+    for (var i = 0; i < this.projects.length; i++) {
+        var project = this.projects[i],
+            projectTop = project.element.offsetTop,
+            projectBottom = projectTop + project.element.offsetHeight;
+
+        if (mid >= projectTop && mid < projectBottom) {
+            this.setActiveProject(project);
+            return;
+        }
+    }
 };
 
 Portfolio.prototype.initResizeObserver = function() {
