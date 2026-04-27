@@ -27,13 +27,13 @@ function Portfolio(element) {
     setTimeout(this.updateColorOnScroll.bind(this), 50);
     setTimeout(this.enableLoop.bind(this), 1000);
 
-    this.element.addEventListener('scroll', throttle(this.updateColorOnScroll.bind(this), 50));
-    this.element.addEventListener('scroll', debounce(this.loopProjectsOnScroll.bind(this)));
+    this.element.addEventListener('scroll', throttle(this.updateColorOnScroll.bind(this), 50), { passive: true });
+    this.element.addEventListener('scroll', debounce(this.loopProjectsOnScroll.bind(this)), { passive: true });
 
     this.initResizeObserver();
 }
 
-Portfolio.prototype.loopProjectsOnScroll = function(event) {
+Portfolio.prototype.loopProjectsOnScroll = function() {
     if (!this.loopEnabled) {
         return;
     }
@@ -47,10 +47,8 @@ Portfolio.prototype.loopProjectsOnScroll = function(event) {
         lastOriginalProjectRect = this.projects[this.projects.length - 2].element.getBoundingClientRect();
 
     if (offsetHeight + scrollTop >= scrollHeight && lastOriginalProjectRect.bottom < offsetHeight + ELEMENT_VISIBILITY_OFFSET) {
-        event.preventDefault();
         this.scrollToProject(1, 'bottom');
     } else if (scrollTop <= SCROLL_THRESHOLD && firstOriginalProjectRect.top > -ELEMENT_VISIBILITY_OFFSET) {
-        event.preventDefault();
         this.scrollToProject(this.projects.length - 2);
     }
 };
