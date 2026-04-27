@@ -1,16 +1,16 @@
 ---
 ---
 
-@import "base";
-@import "fonts";
-@import "aside";
-@import "text";
-@import "portfolio";
-@import "project";
-@import "swiper";
-@import "button";
-@import "link";
-@import "socials";
-@import "tag-cloud";
-@import "tag";
-@import "media";
+@use "base" as *;
+@use "fonts" as *;
+@use "aside" as *;
+@use "text" as *;
+@use "portfolio" as *;
+@use "project" as *;
+@use "swiper" as *;
+@use "button" as *;
+@use "link" as *;
+@use "socials" as *;
+@use "tag-cloud" as *;
+@use "tag" as *;
+@use "media" as *;
