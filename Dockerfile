@@ -1,8 +1,13 @@
-FROM jekyll/jekyll:latest
+FROM ruby:3.2-alpine
 
-ARG build_command
-ENV BUILD_COMMAND ${build_command}
+RUN apk add --no-cache \
+    build-base \
+    libffi-dev \
+    nodejs
 
-RUN bundle install
+WORKDIR /srv/jekyll
 
-CMD ${BUILD_COMMAND}
+EXPOSE 4000 35729
+
+ENTRYPOINT ["sh", "-c"]
+CMD ["bundle install && bundle exec jekyll serve --host 0.0.0.0 --livereload"]
