@@ -11,10 +11,11 @@ function Portfolio(element) {
     this.projects = this.createProjectCollection();
     this.tagCloud = this.initTagCloud();
     this.loopEnabled = false;
+    var scrollContainer = this.element;
     this.colors = this.projects.map(function(project) {
         return {
             color: project.color,
-            position: project.element.offsetTop / document.body.scrollHeight * 100
+            position: project.element.offsetTop / scrollContainer.scrollHeight * 100
         };
     });
     this.colors.push({
@@ -26,8 +27,8 @@ function Portfolio(element) {
     setTimeout(this.updateColorOnScroll.bind(this), 50);
     setTimeout(this.enableLoop.bind(this), 1000);
 
-    window.addEventListener('scroll', throttle(this.updateColorOnScroll.bind(this), 50));
-    window.addEventListener('scroll', debounce(this.loopProjectsOnScroll.bind(this)));
+    this.element.addEventListener('scroll', throttle(this.updateColorOnScroll.bind(this), 50));
+    this.element.addEventListener('scroll', debounce(this.loopProjectsOnScroll.bind(this)));
 
     this.initResizeObserver();
 }
@@ -39,9 +40,9 @@ Portfolio.prototype.loopProjectsOnScroll = function(event) {
 
     var SCROLL_THRESHOLD = 100,
         ELEMENT_VISIBILITY_OFFSET = 100,
-        offsetHeight = window.innerHeight,
-        scrollHeight = document.body.scrollHeight,
-        scrollTop = window.scrollY,
+        offsetHeight = this.element.clientHeight,
+        scrollHeight = this.element.scrollHeight,
+        scrollTop = this.element.scrollTop,
         firstOriginalProjectRect = this.projects[1].element.getBoundingClientRect(),
         lastOriginalProjectRect = this.projects[this.projects.length - 2].element.getBoundingClientRect();
 
@@ -55,8 +56,8 @@ Portfolio.prototype.loopProjectsOnScroll = function(event) {
 };
 
 Portfolio.prototype.updateColorOnScroll = function() {
-    var scrollHeight = document.body.scrollHeight,
-        scrollTop = window.scrollY,
+    var scrollHeight = this.element.scrollHeight,
+        scrollTop = this.element.scrollTop,
         scrollAmount = scrollTop / scrollHeight * 100,
         relativePos, pos1, pos2, color, color1, color2, i;
 
@@ -166,10 +167,11 @@ Portfolio.prototype.realignAllProjectText = function() {
 };
 
 Portfolio.prototype.recalculateColorPositions = function() {
+    var scrollContainer = this.element;
     this.colors = this.projects.map(function(project) {
         return {
             color: project.color,
-            position: project.element.offsetTop / document.body.scrollHeight * 100
+            position: project.element.offsetTop / scrollContainer.scrollHeight * 100
         };
     });
     this.colors.push({
@@ -186,9 +188,12 @@ Portfolio.prototype.calculateColor = function(begin, end, pos) {
 
 Portfolio.prototype.scrollToProject = function(index, position) {
     var position = position || 'top',
-        project = this.projects[index];
+        project = this.projects[index],
+        scrollTop = position === 'top'
+            ? project.element.offsetTop
+            : project.element.offsetTop - this.element.clientHeight + project.element.offsetHeight;
 
-    project.element.scrollIntoView(position === 'top');
+    this.element.scrollTop = scrollTop;
 };
 
 function Project(element, config) {
