@@ -23,8 +23,16 @@ function Portfolio(element) {
         position: 100
     });
 
-    this.scrollToProject(1);
-    setTimeout(this.updateColorOnScroll.bind(this), 50);
+    var me = this;
+    // Double requestAnimationFrame ensures the browser has computed layout
+    // before scrolling. In Instagram WebView, layout calculation is deferred,
+    // and immediate scrollToProject() would use incorrect offsetTop values.
+    requestAnimationFrame(function() {
+        requestAnimationFrame(function() {
+            me.scrollToProject(1);
+            me.updateColorOnScroll();
+        });
+    });
     setTimeout(this.enableLoop.bind(this), 1000);
 
     this.element.addEventListener('scroll', throttle(this.updateColorOnScroll.bind(this), 50), { passive: true });
@@ -276,6 +284,7 @@ Project.prototype.initObserver = function() {
                 me.swiper.lazy.load();
             }
         }, {
+            root: me.portfolio.element,
             threshold: [0.3]
         });
 
