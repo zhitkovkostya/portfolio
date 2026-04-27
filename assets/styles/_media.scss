@@ -4,9 +4,22 @@
     width: 100%;
   }
 
+  .swiper-slide .text {
+    padding-inline: 2rem;
+    font-size: 2rem;
+  }
+
+  .project__header {
+    padding-inline: 2rem;
+  }
+
   .swiper-slide .image {
     width: calc(100% - 4rem);
     height: calc(100% - 4rem);
+  }
+
+  .swiper-pagination {
+    margin-left: 2rem;
   }
 
   .tag-cloud {
