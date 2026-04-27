@@ -1,9 +1,10 @@
 backend:
   name: git-gateway
+  repo: zhitkovkostya/portfolio
   branch: master
 media_folder: "assets/images"
-site_url: https://zhitkov.me
-logo_url: https://zhitkov.me/admin/assets/images/logo-admin.svg
+site_url: https://zhitkov.netlify.app
+logo_url: https://zhitkov.netlify.app/admin/assets/images/logo-admin.svg
 collections:
   - name: project
     label: Projects
