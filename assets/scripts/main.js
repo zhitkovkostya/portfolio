@@ -166,16 +166,12 @@ class InfiniteScroll {
     if (this.itemHeight === 0 || this.itemCount === 0) return false;
 
     if (scrollTop < this.itemHeight) {
-      const newScrollTop = scrollTop + this.itemCount * this.itemHeight;
-      console.log('InfiniteScroll: jumped up', { scrollTop, newScrollTop, itemHeight: this.itemHeight, itemCount: this.itemCount });
-      this.el.scrollTop = newScrollTop;
+      this.el.scrollTop = scrollTop + this.itemCount * this.itemHeight;
       return true;
     }
 
     if (scrollTop >= (this.itemCount + 1) * this.itemHeight) {
-      const newScrollTop = scrollTop - this.itemCount * this.itemHeight;
-      console.log('InfiniteScroll: jumped down', { scrollTop, newScrollTop, itemHeight: this.itemHeight, itemCount: this.itemCount });
-      this.el.scrollTop = newScrollTop;
+      this.el.scrollTop = scrollTop - this.itemCount * this.itemHeight;
       return true;
     }
 
