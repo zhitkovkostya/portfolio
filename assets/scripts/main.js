@@ -165,12 +165,14 @@ class InfiniteScroll {
   checkBoundary(scrollTop) {
     if (this.itemHeight === 0 || this.itemCount === 0) return false;
 
-    if (scrollTop < this.itemHeight) {
+    const buffer = this.itemHeight * 0.25;
+
+    if (scrollTop < buffer) {
       this.el.scrollTop = scrollTop + this.itemCount * this.itemHeight;
       return true;
     }
 
-    if (scrollTop >= (this.itemCount + 1) * this.itemHeight) {
+    if (scrollTop >= (this.itemCount + 1) * this.itemHeight - buffer) {
       this.el.scrollTop = scrollTop - this.itemCount * this.itemHeight;
       return true;
     }
