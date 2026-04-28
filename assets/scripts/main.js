@@ -312,9 +312,8 @@ class Portfolio {
 
     this.tagCloud.build(realProjects);
     this.tagCloudFitter.attach();
-    if (!navigator.userAgent.includes('Instagram')) {
-      this.infiniteScroll.setup();
-    }
+    this.infiniteScroll.setup();
+
 
     // Get all items including clones for Swiper initialization
     const allItems = Array.from(this.portfolioEl.querySelectorAll('.js-portfolio-item'));
