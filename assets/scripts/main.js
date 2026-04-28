@@ -312,7 +312,9 @@ class Portfolio {
 
     this.tagCloud.build(realProjects);
     this.tagCloudFitter.attach();
-    this.infiniteScroll.setup();
+    if (!navigator.userAgent.includes('Instagram')) {
+      this.infiniteScroll.setup();
+    }
 
     // Get all items including clones for Swiper initialization
     const allItems = Array.from(this.portfolioEl.querySelectorAll('.js-portfolio-item'));
@@ -335,7 +337,7 @@ class Portfolio {
   _render() {
     const allItems = this.portfolioEl.querySelectorAll('.js-portfolio-item');
     const scrollTop = this.portfolioEl.scrollTop;
-    const viewportH = this.portfolioEl.clientHeight;
+    const viewportH = this.portfolioEl.clientHeight || window.innerHeight;
 
     this.backgroundUpdater.update(allItems, scrollTop);
     this._updateActiveTags(allItems, scrollTop, viewportH);
