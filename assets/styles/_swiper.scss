@@ -65,10 +65,14 @@
 
   .text {
     position: relative;
-    top: 0;
-    padding: 0 5rem;
+    top: var(--header-height, 0px);
+    padding: 0 5rem 5rem 5rem;
     opacity: 0;
     transition: opacity $transition, transform $transition;
+  }
+
+  &-active .text {
+    opacity: 1;
   }
 
   .image {

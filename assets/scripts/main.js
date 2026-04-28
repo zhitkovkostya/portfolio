@@ -1,432 +1,405 @@
-(function() {
-    document.addEventListener('DOMContentLoaded', initPortfolio);
-
-    function initPortfolio() {
-        new Portfolio(document.querySelector('.js-portfolio'));
-    }
-})();
-
-function Portfolio(element) {
-    this.element = element;
-    this.projects = this.createProjectCollection();
-    this.tagCloud = this.initTagCloud();
-    this.loopEnabled = false;
-    var scrollContainer = this.element;
-    this.colors = this.projects.map(function(project) {
-        return {
-            color: project.color,
-            position: project.element.offsetTop / scrollContainer.scrollHeight * 100
-        };
-    });
-    this.colors.push({
-        color: this.projects[2].color,
-        position: 100
-    });
-
-    var me = this;
-    // Double requestAnimationFrame ensures the browser has computed layout
-    // before scrolling. In Instagram WebView, layout calculation is deferred,
-    // and immediate scrollToProject() would use incorrect offsetTop values.
-    requestAnimationFrame(function() {
-        requestAnimationFrame(function() {
-            me.scrollToProject(1);
-            me.updateColorOnScroll();
-            me.updateActiveProject();
-            me.initializeObservers();
-        });
-    });
-    setTimeout(this.enableLoop.bind(this), 1000);
-
-    var me = this;
-    var updateOnScroll = function() {
-        me.updateColorOnScroll();
-        me.updateActiveProject();
-    };
-    this.element.addEventListener('scroll', throttle(updateOnScroll, 50), { passive: true });
-    this.element.addEventListener('scroll', debounce(this.loopProjectsOnScroll.bind(this)), { passive: true });
-
-    this.initResizeObserver();
-}
-
-Portfolio.prototype.loopProjectsOnScroll = function() {
-    if (!this.loopEnabled) {
-        return;
-    }
-
-    var SCROLL_THRESHOLD = 100,
-        ELEMENT_VISIBILITY_OFFSET = 100,
-        offsetHeight = this.element.clientHeight,
-        scrollHeight = this.element.scrollHeight,
-        scrollTop = this.element.scrollTop,
-        firstOriginalProjectRect = this.projects[1].element.getBoundingClientRect(),
-        lastOriginalProjectRect = this.projects[this.projects.length - 2].element.getBoundingClientRect();
-
-    if (offsetHeight + scrollTop >= scrollHeight && lastOriginalProjectRect.bottom < offsetHeight + ELEMENT_VISIBILITY_OFFSET) {
-        this.scrollToProject(1, 'bottom');
-    } else if (scrollTop <= SCROLL_THRESHOLD && firstOriginalProjectRect.top > -ELEMENT_VISIBILITY_OFFSET) {
-        this.scrollToProject(this.projects.length - 2);
-    }
-};
-
-Portfolio.prototype.updateColorOnScroll = function() {
-    var scrollHeight = this.element.scrollHeight,
-        scrollTop = this.element.scrollTop,
-        scrollAmount = scrollTop / scrollHeight * 100,
-        relativePos, pos1, pos2, color, color1, color2, i;
-
-
-    if (scrollAmount <= this.colors[0].position) {
-        // Use the first color the the colors array
-        this.setColor(this.colors[0].color);
-    } else if (scrollAmount >= this.colors[this.colors.length - 1].position) {
-        // Use the last color the the colors array
-        this.setColor(this.colors[this.colors.length - 1].color);
-    } else {
-        // Get the position
-        for (i = 0; i < this.colors.length; i += 1) {
-            // Find out between which 2 colors we currently are
-            if (scrollAmount >= this.colors[i].position) {
-                pos1 = this.colors[i].position;
-                color1 = this.colors[i].color;
-            } else {
-                pos2 = this.colors[i].position;
-                color2 = this.colors[i].color;
-                break;
-            }
-        }
-
-        // Calculate the relative amount scrolled
-        relativePos = ((scrollAmount - pos1) / (pos2 - pos1));
-
-        // Calculate new color value and set it using setColor
-        color = this.calculateColor(color1, color2, relativePos);
-        this.setColor(color);
-    }
-};
-
-Portfolio.prototype.createProjectCollection = function() {
-    var projectElements;
-
-    this.cloneElements();
-
-    projectElements = this.element.querySelectorAll('.js-project');
-
-    return Array.from(projectElements).map(this.createProjectModel.bind(this));
-};
-
-Portfolio.prototype.createProjectModel = function(element) {
-    var project = new Project(element, {
-        portfolio: this
-    });
-    project.observerInitialized = false;
-    return project;
-};
-
-Portfolio.prototype.cloneElements = function() {
-    var portfolioItemElements = this.element.querySelectorAll('.js-portfolio-item'),
-        firstItemElement = portfolioItemElements[0],
-        lastItemElement = portfolioItemElements[portfolioItemElements.length - 1],
-        parentElement = lastItemElement.parentElement,
-        firstProjectCloneElement, lastProjectCloneElement;
-
-    firstProjectCloneElement = firstItemElement.cloneNode(true);
-    lastProjectCloneElement = lastItemElement.cloneNode(true);
-    parentElement.insertBefore(firstProjectCloneElement, lastItemElement.nextSibling);
-    parentElement.insertBefore(lastProjectCloneElement, firstItemElement);
-};
-
-Portfolio.prototype.initTagCloud = function() {
-    var element = document.querySelector('.js-tag-cloud'),
-        tags = this.projects
-            .reduce(function(allTags, project) {
-                return allTags.concat(project.tags);
-            }, [])
-            .filter(function(value, index, self) {
-                return value && self.indexOf(value) === index;
-            })
-            .sort();
-
-    return new TagCloud(element, {
-        tags: tags
-    });
-};
-
-Portfolio.prototype.setActiveProject = function(project) {
-    this.tagCloud.setActiveTags(project.tags);
-};
-
-Portfolio.prototype.setColor = function(color) {
-    this.element.style.setProperty('background-color', color);
-};
-
-Portfolio.prototype.enableLoop = function() {
-    this.loopEnabled = true;
-};
-
-Portfolio.prototype.initializeObservers = function() {
-    this.projects.forEach(function(project) {
-        if (!project.observerInitialized) {
-            project.initObserver();
-            project.observerInitialized = true;
-        }
-    });
-};
-
-Portfolio.prototype.updateActiveProject = function() {
-    // We use scroll position calculation instead of IntersectionObserver because:
-    // 1. IntersectionObserver with custom root doesn't work reliably in Instagram WebView
-    // 2. We already track scroll position for color updates, reusing it is simpler
-    // 3. Direct calculation ensures consistent behavior across all browsers/WebViews
-    var scrollTop = this.element.scrollTop,
-        clientHeight = this.element.clientHeight,
-        mid = scrollTop + clientHeight / 2;
-
-    for (var i = 0; i < this.projects.length; i++) {
-        var project = this.projects[i],
-            projectTop = project.element.offsetTop,
-            projectBottom = projectTop + project.element.offsetHeight;
-
-        if (mid >= projectTop && mid < projectBottom) {
-            this.setActiveProject(project);
-            return;
-        }
-    }
-};
-
-Portfolio.prototype.initResizeObserver = function() {
-    var me = this;
-
-    var resizeObserver = new ResizeObserver(debounce(function() {
-        me.recalculateColorPositions();
-        me.updateColorOnScroll();
-        me.realignAllProjectText();
-    }));
-
-    resizeObserver.observe(document.documentElement);
-};
-
-Portfolio.prototype.realignAllProjectText = function() {
-    this.projects.forEach(function(project) {
-        project.alignTextContent();
-    });
-};
-
-Portfolio.prototype.recalculateColorPositions = function() {
-    var scrollContainer = this.element;
-    this.colors = this.projects.map(function(project) {
-        return {
-            color: project.color,
-            position: project.element.offsetTop / scrollContainer.scrollHeight * 100
-        };
-    });
-    this.colors.push({
-        color: this.projects[2].color,
-        position: 100
-    });
-};
-
-Portfolio.prototype.calculateColor = function(begin, end, pos) {
-    var color = 'rgba(' + [parseInt((begin[0] + pos * (end[0] - begin[0])), 10), parseInt((begin[1] + pos * (end[1] - begin[1])), 10), parseInt((begin[2] + pos * (end[2] - begin[2])), 10), 1].join(', ') + ')';
-
-    return color;
-};
-
-Portfolio.prototype.scrollToProject = function(index, position) {
-    var position = position || 'top',
-        project = this.projects[index];
-
-    project.element.scrollIntoView(position === 'top');
-};
-
-function Project(element, config) {
-    this.id = element.id;
-    this.element = element;
-    this.portfolio = config.portfolio;
-    this.swiper = this.initSwiper();
-    this.tags = this.element.dataset.tags ? this.element.dataset.tags.split(',') : [];
-    this.color = this.getRGBA(this.element.dataset.color);
-
-    this.element.swiper = this.swiper;
-
-    this.initObserver();
-}
-
-Project.prototype.initSwiper = function() {
-    var swiperElement = this.element.querySelector('.js-swiper'),
-        swiperOptions = {
-            loop: swiperElement.querySelectorAll('.js-swiper-slide').length > 1,
-            watchOverflow: true,
-            resizeObserver: true,
-            watchSlidesProgress: true,
-            preloadImages: false,
-            lazy: {
-                loadOnTransitionStart: true,
-                elementClass: 'image--lazy'
-            },
-            effect: 'fade',
-            fadeEffect: {
-                crossFade: true
-            },
-            followFinger: false,
-            pagination: {
-                type: 'bullets',
-                el: swiperElement.querySelector('.js-swiper-pagination'),
-                clickable: true,
-                bulletElement: 'button',
-                bulletClass: 'button',
-                bulletActiveClass: 'button--active'
-            },
-            on: {
-                init: this.alignTextContent.bind(this),
-                resize: this.alignTextContent.bind(this)
-            }
-        };
-
-    return new Swiper(swiperElement, swiperOptions);
-};
-
-Project.prototype.alignTextContent = function() {
-    var headerElement = this.element.querySelector('.js-project-header'),
-        textElements = this.element.querySelectorAll('.js-text'),
-        textElementsCount = textElements.length,
-        textElement, i;
-
-    for (i = 0; i < textElementsCount; i++) {
-        textElement = textElements[i];
-
-        textElement.style.top = headerElement.offsetHeight + 'px';
-        textElement.style.opacity = '1';
-    }
-};
-
 /**
+ * Portfolio — Vanilla JS with SOLID principles
  *
- * @param hex - color in hex (e.g. #aabbcc)
- * @returns {*}
+ * Classes:
+ * - ColorInterpolator: pure color math
+ * - BackgroundUpdater: scroll-driven background color
+ * - TagCloud: tag rendering and activation
+ * - InfiniteScroll: seamless infinite scroll
+ * - SwiperManager: Swiper initialization
+ * - Portfolio: orchestrator
  */
-Project.prototype.getRGBA = function(hex) {
-    return hex.toLowerCase().match(/[0-9a-f]{2}/g).map(function(number) {
-        return parseInt(number, 16);
+
+class ColorInterpolator {
+  parse(hex) {
+    const h = hex.replace('#', '');
+    return [
+      parseInt(h.slice(0, 2), 16),
+      parseInt(h.slice(2, 4), 16),
+      parseInt(h.slice(4, 6), 16),
+    ];
+  }
+
+  lerp(colorA, colorB, t) {
+    const tc = Math.min(1, Math.max(0, t));
+    return [
+      Math.round(colorA[0] + (colorB[0] - colorA[0]) * tc),
+      Math.round(colorA[1] + (colorB[1] - colorA[1]) * tc),
+      Math.round(colorA[2] + (colorB[2] - colorA[2]) * tc),
+    ];
+  }
+
+  toString(color) {
+    return `rgb(${color[0]},${color[1]},${color[2]})`;
+  }
+}
+
+class BackgroundUpdater {
+  constructor(portfolioEl, colorInterpolator) {
+    this.el = portfolioEl;
+    this.interpolator = colorInterpolator;
+    this.el.style.transition = 'none';
+  }
+
+  update(allItems, scrollTop) {
+    if (allItems.length === 0) return;
+
+    let lowerIdx = 0;
+    for (let i = 0; i < allItems.length; i++) {
+      if (allItems[i].offsetTop <= scrollTop) {
+        lowerIdx = i;
+      } else {
+        break;
+      }
+    }
+
+    const itemA = allItems[lowerIdx];
+    const itemB = allItems[Math.min(lowerIdx + 1, allItems.length - 1)];
+
+    const projectA = itemA.querySelector('.js-project');
+    const projectB = itemB.querySelector('.js-project');
+
+    if (!projectA || !projectB) return;
+
+    const colorA = this.interpolator.parse(projectA.dataset.color || '#000000');
+    const colorB = this.interpolator.parse(projectB.dataset.color || '#000000');
+
+    const topA = itemA.offsetTop;
+    const topB = itemB.offsetTop;
+
+    let t = 0;
+    if (topB !== topA) {
+      t = (scrollTop - topA) / (topB - topA);
+    }
+
+    const blended = this.interpolator.lerp(colorA, colorB, t);
+    this.el.style.backgroundColor = this.interpolator.toString(blended);
+  }
+}
+
+class TagCloud {
+  constructor(containerEl) {
+    this.el = containerEl;
+    this.tagMap = new Map();
+    this.activeTagNames = new Set();
+  }
+
+  build(projects) {
+    const allTags = new Set();
+
+    projects.forEach((project) => {
+      const tagsAttr = project.dataset.tags;
+      if (!tagsAttr) return;
+
+      tagsAttr.split(',').forEach((rawTag) => {
+        const tag = rawTag.trim();
+        if (tag) allTags.add(tag);
+      });
     });
-};
 
-Project.prototype.initObserver = function() {
-    var me = this,
-        observer = new IntersectionObserver(function(entries) {
-            var entry = entries[0];
+    const sortedTags = Array.from(allTags).sort();
+    sortedTags.forEach((tag) => {
+      const li = document.createElement('li');
+      li.className = 'tag js-tag';
+      li.textContent = tag;
+      this.el.appendChild(li);
+      this.el.appendChild(document.createTextNode(' '));
+      this.tagMap.set(tag, li);
+    });
+  }
 
-            if (entry.isIntersecting && entry.intersectionRatio > 0) {
-                me.portfolio.setActiveProject(me);
-                me.swiper.lazy.load();
+  setActiveProject(tagsString) {
+    const newTags = new Set();
+    if (tagsString) {
+      tagsString.split(',').forEach((rawTag) => {
+        const tag = rawTag.trim();
+        if (tag) newTags.add(tag);
+      });
+    }
+
+    this.tagMap.forEach((el, tagName) => {
+      if (newTags.has(tagName)) {
+        if (!this.activeTagNames.has(tagName)) {
+          el.classList.add('tag--active');
+          this.activeTagNames.add(tagName);
+        }
+      } else {
+        if (this.activeTagNames.has(tagName)) {
+          el.classList.remove('tag--active');
+          this.activeTagNames.delete(tagName);
+        }
+      }
+    });
+  }
+}
+
+class InfiniteScroll {
+  constructor(containerEl) {
+    this.el = containerEl;
+    this.itemCount = 0;
+    this.itemHeight = 0;
+  }
+
+  setup() {
+    const realItems = Array.from(this.el.querySelectorAll('.js-portfolio-item'));
+    const N = realItems.length;
+
+    if (N === 0) return { itemCount: 0, itemHeight: 0 };
+
+    const leadingClone = realItems[N - 1].cloneNode(true);
+    leadingClone.setAttribute('aria-hidden', 'true');
+    this.el.insertBefore(leadingClone, realItems[0]);
+
+    const trailingClone = realItems[0].cloneNode(true);
+    trailingClone.setAttribute('aria-hidden', 'true');
+    this.el.appendChild(trailingClone);
+
+    this.itemHeight = realItems[0].offsetHeight;
+    this.itemCount = N;
+
+    this.el.scrollTop = this.itemHeight;
+
+    return { itemCount: N, itemHeight: this.itemHeight };
+  }
+
+  checkBoundary(scrollTop) {
+    if (this.itemHeight === 0 || this.itemCount === 0) return false;
+
+    if (scrollTop < this.itemHeight) {
+      const newScrollTop = scrollTop + this.itemCount * this.itemHeight;
+      console.log('InfiniteScroll: jumped up', { scrollTop, newScrollTop, itemHeight: this.itemHeight, itemCount: this.itemCount });
+      this.el.scrollTop = newScrollTop;
+      return true;
+    }
+
+    if (scrollTop >= (this.itemCount + 1) * this.itemHeight) {
+      const newScrollTop = scrollTop - this.itemCount * this.itemHeight;
+      console.log('InfiniteScroll: jumped down', { scrollTop, newScrollTop, itemHeight: this.itemHeight, itemCount: this.itemCount });
+      this.el.scrollTop = newScrollTop;
+      return true;
+    }
+
+    return false;
+  }
+}
+
+class AnchorNavigation {
+  constructor(portfolioEl) {
+    this.el = portfolioEl;
+  }
+
+  handleHash() {
+    const slug = window.location.hash.slice(1);
+    if (!slug) return;
+
+    const project = this.el.querySelector(`[data-slug="${slug}"]`);
+    if (!project) return;
+
+    const item = project.closest('.js-portfolio-item');
+    if (item) {
+      item.scrollIntoView({ block: 'start' });
+    }
+  }
+
+  attach() {
+    window.addEventListener('hashchange', () => this.handleHash(), { passive: true });
+    this.handleHash();
+  }
+}
+
+class TagCloudFitter {
+  constructor(containerEl, parentEl) {
+    this.el = containerEl;
+    this.parent = parentEl;
+    this._debounceTimer = null;
+  }
+
+  fit() {
+    const parentH = this.parent.offsetHeight;
+    if (!parentH) return;
+
+    let fontSize = 3;
+    this.el.style.fontSize = fontSize.toFixed(2) + 'rem';
+
+    while (this.el.offsetHeight < parentH) {
+      fontSize += 0.1;
+      this.el.style.fontSize = fontSize.toFixed(2) + 'rem';
+    }
+
+    if (this.el.offsetHeight > parentH) {
+      this.el.style.fontSize = ((fontSize - 0.1).toFixed(2)) + 'rem';
+    }
+  }
+
+  attach() {
+    document.fonts.ready.then(() => this.fit());
+    window.addEventListener('resize', () => {
+      clearTimeout(this._debounceTimer);
+      this._debounceTimer = setTimeout(() => this.fit(), 150);
+    }, { passive: true });
+    window.addEventListener('orientationchange', () => this.fit(), { passive: true });
+  }
+}
+
+class SwiperManager {
+  static updateTextTop(item) {
+    const header = item.querySelector('.js-project-header');
+    if (!header) return;
+    item.style.setProperty('--header-height', header.offsetHeight + 'px');
+  }
+
+  static init(items) {
+    items.forEach((item) => {
+      const swiperEl = item.querySelector('.js-swiper');
+      const paginationEl = swiperEl?.querySelector('.js-swiper-pagination');
+      const slideCount = swiperEl?.querySelectorAll('.js-swiper-slide').length || 0;
+
+      if (!swiperEl || slideCount === 0) return;
+
+      new window.Swiper(swiperEl, {
+        loop: slideCount > 1,
+        watchOverflow: true,
+        resizeObserver: true,
+        watchSlidesProgress: true,
+        preloadImages: false,
+        lazy: {
+          loadOnTransitionStart: true,
+          elementClass: 'image--lazy',
+        },
+        effect: 'fade',
+        fadeEffect: {
+          crossFade: true,
+        },
+        followFinger: false,
+        pagination: paginationEl
+          ? {
+              el: paginationEl,
+              type: 'bullets',
+              clickable: true,
+              bulletElement: 'button',
+              bulletClass: 'button',
+              bulletActiveClass: 'button--active',
             }
-        }, {
-            root: me.portfolio.element,
-            threshold: [0.3]
-        });
-
-    observer.observe(this.element);
-};
-
-function TagCloud(element, config) {
-    var me = this;
-
-    this.element = element;
-    this.tags = this.createTagCollection(config.tags);
-
-    this.setActiveTags([]);
-
-    document.fonts.ready.then(function() {
-        me.fitText();
+          : false,
+        a11y: {
+          enabled: true,
+        },
+        keyboard: {
+          enabled: true,
+        },
+        on: {
+          init: () => SwiperManager.updateTextTop(item),
+          resize: () => SwiperManager.updateTextTop(item),
+        },
+      });
     });
-
-    window.addEventListener('resize', debounce(this.fitText.bind(this), 500));
-    window.addEventListener('orientationchange', this.fitText.bind(this));
-};
-
-TagCloud.prototype.createTagCollection = function(tags) {
-    var me = this,
-        collection, tagElement, textNode;
-
-    collection = tags.map(function(tag) {
-        tagElement = document.createElement('li');
-        tagElement.innerText = tag;
-        tagElement.classList.add('tag');
-        tagElement.classList.add('js-tag');
-        textNode = document.createTextNode(' ');
-        me.element.appendChild(tagElement);
-        me.element.appendChild(textNode);
-
-        return new Tag({
-            element: tagElement,
-            text: tag
-        });
-    });
-
-    return collection;
-};
-
-/**
- * @param tags {[String]} - an array of tags
- */
-TagCloud.prototype.setActiveTags = function(tags) {
-    this.tags.forEach(function(tag) {
-        tag.toggleActive(tags.includes(tag.text));
-    });
-};
-
-TagCloud.prototype.fitText = function() {
-    var parentHeight = this.element.parentElement.offsetHeight,
-        fontSize = 3;
-
-    this.setFontSize(fontSize.toFixed(2));
-
-    while (this.element.offsetHeight < parentHeight) {
-        fontSize += 0.1;
-        this.setFontSize(fontSize.toFixed(2));
-    }
-
-    if (this.element.offsetHeight > parentHeight) {
-        this.setFontSize((fontSize - 0.1).toFixed(2));
-    }
-};
-
-TagCloud.prototype.setFontSize = function(fontSize) {
-    this.element.style.setProperty('font-size', fontSize + 'rem');
-};
-
-function Tag(config) {
-    this.element = config.element;
-    this.text = config.text;
+  }
 }
 
-Tag.prototype.toggleActive = function(state) {
-    this.element.classList.toggle('tag--active', state);
-};
+class Portfolio {
+  constructor(portfolioEl, tagCloudEl) {
+    this.portfolioEl = portfolioEl;
+    this.tagCloudEl = tagCloudEl;
+    this.ticking = false;
 
-function throttle(fn, wait) {
-    var time = Date.now();
+    this.colorInterpolator = new ColorInterpolator();
+    this.backgroundUpdater = new BackgroundUpdater(portfolioEl, this.colorInterpolator);
+    this.tagCloud = new TagCloud(tagCloudEl);
+    this.tagCloudFitter = new TagCloudFitter(tagCloudEl, tagCloudEl.parentElement);
+    this.anchorNavigation = new AnchorNavigation(portfolioEl);
+    this.infiniteScroll = new InfiniteScroll(portfolioEl);
+  }
 
-    return function() {
-        if ((time + wait - Date.now()) < 0) {
-            fn.apply(void 0, arguments);
-            time = Date.now();
-        }
-    };
+  init() {
+    const realItems = Array.from(this.portfolioEl.querySelectorAll('.js-portfolio-item'));
+    const realProjects = realItems.map((item) => item.querySelector('.js-project'));
+
+    this.tagCloud.build(realProjects);
+    this.tagCloudFitter.attach();
+    this.infiniteScroll.setup();
+
+    // Get all items including clones for Swiper initialization
+    const allItems = Array.from(this.portfolioEl.querySelectorAll('.js-portfolio-item'));
+    SwiperManager.init(allItems);
+
+    // Update text top on window resize
+    let _textResizeTimer;
+    window.addEventListener('resize', () => {
+      clearTimeout(_textResizeTimer);
+      _textResizeTimer = setTimeout(() => {
+        allItems.forEach(item => SwiperManager.updateTextTop(item));
+      }, 150);
+    }, { passive: true });
+
+    this._render();
+    this._attachScrollListener();
+    this.anchorNavigation.attach();
+  }
+
+  _render() {
+    const allItems = this.portfolioEl.querySelectorAll('.js-portfolio-item');
+    const scrollTop = this.portfolioEl.scrollTop;
+    const viewportH = this.portfolioEl.clientHeight;
+
+    this.backgroundUpdater.update(allItems, scrollTop);
+    this._updateActiveTags(allItems, scrollTop, viewportH);
+  }
+
+  _updateActiveTags(allItems, scrollTop, viewportH) {
+    let maxVisible = 0;
+    let dominantProject = null;
+
+    allItems.forEach((item) => {
+      const top = item.offsetTop;
+      const height = item.offsetHeight;
+      const visibleTop = Math.max(top, scrollTop);
+      const visibleBottom = Math.min(top + height, scrollTop + viewportH);
+      const visible = Math.max(0, visibleBottom - visibleTop);
+
+      if (visible > maxVisible) {
+        maxVisible = visible;
+        dominantProject = item.querySelector('.js-project');
+      }
+    });
+
+    if (!dominantProject || maxVisible <= viewportH * 0.5) {
+      this.tagCloud.setActiveProject('');
+      return;
+    }
+
+    this.tagCloud.setActiveProject(dominantProject.dataset.tags || '');
+  }
+
+  _attachScrollListener() {
+    this.portfolioEl.addEventListener('scroll', () => this._onScroll(), { passive: true });
+  }
+
+  _onScroll() {
+    if (this.ticking) return;
+    this.ticking = true;
+
+    requestAnimationFrame(() => {
+      const scrollTop = this.portfolioEl.scrollTop;
+
+      const jumped = this.infiniteScroll.checkBoundary(scrollTop);
+
+      if (!jumped) {
+        this._render();
+      }
+
+      this.ticking = false;
+    });
+  }
 }
 
-function debounce(fn) {
-    var timeout;
+(function () {
+  'use strict';
 
-    return function () {
-        var context = this,
-            args = arguments;
+  const portfolioEl = document.querySelector('.js-portfolio');
+  const tagCloudEl = document.querySelector('.js-tag-cloud');
 
-        if (timeout) {
-            window.cancelAnimationFrame(timeout);
-        }
+  if (!portfolioEl || !tagCloudEl) return;
 
-        timeout = window.requestAnimationFrame(function () {
-            fn.apply(context, args);
-        });
-    };
-};
+  const portfolio = new Portfolio(portfolioEl, tagCloudEl);
+  portfolio.init();
+}());

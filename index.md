@@ -20,7 +20,7 @@ layout: default
            title=site.title
            excerpt=excerpt
            slug="info"
-           color="000000"
+           color="#000000"
            is_inverted=true
         %}
     </li>

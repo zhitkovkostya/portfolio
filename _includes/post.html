@@ -1,6 +1,6 @@
  <article
         class="project {% if include.is_inverted %} project--inverted {% endif %} js-project"
-        id="{{ include.slug }}"
+        data-slug="{{ include.slug }}"
         data-tags="{{ include.tags | join: ',' }}"
         data-color="{{ include.color }}"
 >
