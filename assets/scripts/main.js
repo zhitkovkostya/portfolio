@@ -294,6 +294,120 @@ class SwiperManager {
   }
 }
 
+class MobileGestureNavigation {
+  constructor(portfolioEl) {
+    this.el = portfolioEl;
+    this.touchStartX = 0;
+    this.touchStartY = 0;
+    this.scrollStartTop = 0;
+    this.isScrolling = false;
+    this.minSwipeDistance = 1;
+  }
+
+  getAllItems() {
+    return Array.from(this.el.querySelectorAll('.js-portfolio-item'));
+  }
+
+  getCurrentProjectIndex() {
+    const allItems = this.getAllItems();
+    const scrollTop = this.el.scrollTop;
+    const viewportH = this.el.clientHeight;
+    const centerScroll = scrollTop + viewportH / 2;
+
+    let closestIdx = 0;
+    let minDistance = Infinity;
+
+    allItems.forEach((item, idx) => {
+      const itemCenter = item.offsetTop + item.offsetHeight / 2;
+      const distance = Math.abs(itemCenter - centerScroll);
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestIdx = idx;
+      }
+    });
+
+    return closestIdx;
+  }
+
+  scrollToProject(index) {
+    const allItems = this.getAllItems();
+    if (index < 0 || index >= allItems.length) return;
+
+    const targetItem = allItems[index];
+    const targetOffset = targetItem.offsetTop;
+
+    console.log('Scrolling to:', {
+      index,
+      offsetTop: targetOffset,
+      currentScrollTop: this.el.scrollTop,
+      slug: targetItem.querySelector('.js-project')?.dataset.slug || 'unknown',
+    });
+
+    this.el.scrollTo({
+      top: targetOffset,
+      behavior: 'smooth',
+    });
+  }
+
+  attach() {
+    this.el.addEventListener('touchstart', (e) => this._onTouchStart(e), { passive: true });
+    this.el.addEventListener('touchend', (e) => this._onTouchEnd(e), { passive: true });
+
+    // Log all items for debugging
+    const allItems = this.getAllItems();
+    console.log('All portfolio items:', allItems.map((item, idx) => ({
+      idx,
+      offsetTop: item.offsetTop,
+      slug: item.querySelector('.js-project')?.dataset.slug || 'clone',
+      isHidden: item.hasAttribute('aria-hidden'),
+    })));
+  }
+
+  _onTouchStart(e) {
+    this.touchStartX = e.touches[0].clientX;
+    this.touchStartY = e.touches[0].clientY;
+    this.scrollStartTop = this.el.scrollTop;
+    this.isScrolling = false;
+  }
+
+  _onTouchEnd(e) {
+    const touchEndY = e.changedTouches[0].clientY;
+
+    const deltaY = touchEndY - this.touchStartY;
+    const absDeltaY = Math.abs(deltaY);
+
+    // Only trigger if significant vertical swipe
+    if (absDeltaY > this.minSwipeDistance) {
+      const currentIdx = this.getCurrentProjectIndex();
+      let nextIdx;
+
+      if (deltaY > 0) {
+        // Swiped down → previous project
+        nextIdx = currentIdx - 1;
+      } else {
+        // Swiped up → next project
+        nextIdx = currentIdx + 1;
+      }
+
+      const allItems = this.getAllItems();
+      const targetItem = allItems[nextIdx];
+
+      console.log('Swipe navigation:', {
+        currentIdx,
+        nextIdx,
+        totalItems: allItems.length,
+        deltaY,
+        targetItem: targetItem?.dataset.slug || 'unknown',
+        targetOffset: targetItem?.offsetTop,
+        scrollTop: this.el.scrollTop,
+        viewportH: this.el.clientHeight,
+      });
+
+      this.scrollToProject(nextIdx);
+    }
+  }
+}
+
 class Portfolio {
   constructor(portfolioEl, tagCloudEl) {
     this.portfolioEl = portfolioEl;
@@ -306,6 +420,7 @@ class Portfolio {
     this.tagCloudFitter = new TagCloudFitter(tagCloudEl, tagCloudEl.parentElement);
     this.anchorNavigation = new AnchorNavigation(portfolioEl);
     this.infiniteScroll = new InfiniteScroll(portfolioEl);
+    this.mobileGestureNavigation = new MobileGestureNavigation(portfolioEl);
   }
 
   init() {
@@ -333,6 +448,7 @@ class Portfolio {
     this._render();
     this._attachScrollListener();
     this.anchorNavigation.attach();
+    this.mobileGestureNavigation.attach();
   }
 
   _render() {
