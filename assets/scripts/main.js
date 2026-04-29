@@ -134,10 +134,11 @@ class TagCloud {
 }
 
 class InfiniteScroll {
-  constructor(containerEl) {
+  constructor(containerEl, shouldSkip) {
     this.el = containerEl;
     this.itemCount = 0;
     this.itemHeight = 0;
+    this.shouldSkip = shouldSkip || (() => false);
   }
 
   setup() {
@@ -164,6 +165,9 @@ class InfiniteScroll {
 
   checkBoundary(scrollTop) {
     if (this.itemHeight === 0 || this.itemCount === 0) return false;
+
+    // Skip boundary check if animation is in progress
+    if (this.shouldSkip()) return false;
 
     const buffer = this.itemHeight * 0.25;
 
@@ -302,6 +306,8 @@ class MobileGestureNavigation {
     this.scrollStartTop = 0;
     this.isScrolling = false;
     this.minSwipeDistance = 1;
+    this.isAnimating = false;
+    this.onAnimationEnd = null;
   }
 
   getAllItems() {
@@ -329,7 +335,7 @@ class MobileGestureNavigation {
     return closestIdx;
   }
 
-  scrollToProject(index) {
+  scrollToProject(index, onAnimationEnd) {
     const allItems = this.getAllItems();
     if (index < 0 || index >= allItems.length) return;
 
@@ -343,24 +349,27 @@ class MobileGestureNavigation {
       slug: targetItem.querySelector('.js-project')?.dataset.slug || 'unknown',
     });
 
+    // Block infinite scroll during animation
+    this.isAnimating = true;
+
     this.el.scrollTo({
       top: targetOffset,
       behavior: 'smooth',
     });
+
+    // Unblock after animation completes and trigger infinite scroll check
+    setTimeout(() => {
+      this.isAnimating = false;
+      // Call the callback to check and apply infinite scroll if needed
+      if (onAnimationEnd) {
+        onAnimationEnd();
+      }
+    }, 1000);
   }
 
   attach() {
     this.el.addEventListener('touchstart', (e) => this._onTouchStart(e), { passive: true });
     this.el.addEventListener('touchend', (e) => this._onTouchEnd(e), { passive: true });
-
-    // Log all items for debugging
-    const allItems = this.getAllItems();
-    console.log('All portfolio items:', allItems.map((item, idx) => ({
-      idx,
-      offsetTop: item.offsetTop,
-      slug: item.querySelector('.js-project')?.dataset.slug || 'clone',
-      isHidden: item.hasAttribute('aria-hidden'),
-    })));
   }
 
   _onTouchStart(e) {
@@ -403,7 +412,12 @@ class MobileGestureNavigation {
         viewportH: this.el.clientHeight,
       });
 
-      this.scrollToProject(nextIdx);
+      this.scrollToProject(nextIdx, () => {
+        // Force infinite scroll check after animation
+        if (this.onAnimationEnd) {
+          this.onAnimationEnd();
+        }
+      });
     }
   }
 }
@@ -419,8 +433,9 @@ class Portfolio {
     this.tagCloud = new TagCloud(tagCloudEl);
     this.tagCloudFitter = new TagCloudFitter(tagCloudEl, tagCloudEl.parentElement);
     this.anchorNavigation = new AnchorNavigation(portfolioEl);
-    this.infiniteScroll = new InfiniteScroll(portfolioEl);
     this.mobileGestureNavigation = new MobileGestureNavigation(portfolioEl);
+    // Pass callback to skip infinite scroll during swipe animation
+    this.infiniteScroll = new InfiniteScroll(portfolioEl, () => this.mobileGestureNavigation.isAnimating);
   }
 
   init() {
@@ -449,6 +464,12 @@ class Portfolio {
     this._attachScrollListener();
     this.anchorNavigation.attach();
     this.mobileGestureNavigation.attach();
+
+    // Bind infinite scroll check callback for swipe animations
+    this.mobileGestureNavigation.onAnimationEnd = () => {
+      const scrollTop = this.portfolioEl.scrollTop;
+      this.infiniteScroll.checkBoundary(scrollTop);
+    };
   }
 
   _render() {
