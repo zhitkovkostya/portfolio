@@ -35,8 +35,8 @@ class ColorInterpolator {
 }
 
 class BackgroundUpdater {
-  constructor(portfolioEl, colorInterpolator) {
-    this.el = portfolioEl;
+  constructor(containerEl, colorInterpolator) {
+    this.el = containerEl;
     this.interpolator = colorInterpolator;
     this.el.style.transition = 'none';
   }
@@ -432,7 +432,7 @@ class Portfolio {
     this.ticking = false;
 
     this.colorInterpolator = new ColorInterpolator();
-    this.backgroundUpdater = new BackgroundUpdater(portfolioEl, this.colorInterpolator);
+    this.backgroundUpdater = new BackgroundUpdater(document.body, this.colorInterpolator);
     this.tagCloud = new TagCloud(tagCloudEl);
     this.tagCloudFitter = new TagCloudFitter(tagCloudEl, tagCloudEl.parentElement);
     this.anchorNavigation = new AnchorNavigation(portfolioEl);
