@@ -465,6 +465,7 @@ class Portfolio {
 
     this._render();
     this._attachScrollListener();
+    this._attachSwiperNextHandler();
     this.anchorNavigation.attach();
     this.mobileGestureNavigation.attach();
 
@@ -527,6 +528,17 @@ class Portfolio {
       }
 
       this.ticking = false;
+    });
+  }
+
+  _attachSwiperNextHandler() {
+    document.addEventListener('click', (e) => {
+      if (!e.target.classList.contains('js-swiper-next')) return;
+
+      const swiperEl = e.target.closest('.js-project')?.querySelector('.js-swiper');
+      if (!swiperEl?.swiper) return;
+
+      swiperEl.swiper.slideNext();
     });
   }
 }

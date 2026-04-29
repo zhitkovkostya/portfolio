@@ -18,6 +18,10 @@
                             {% for link in include.links %}
                                 <a href="{{ link.url }}" class="link" target="_blank" rel="noopener">{{ link.title }}</a>
                             {% endfor %}
+
+                            {% if include.images.size >= 1 %}
+                                <button class="link js-swiper-next" type="button">View slides</button>
+                            {% endif %}
                         </div>
                     </div>
 
