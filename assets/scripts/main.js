@@ -380,13 +380,16 @@ class MobileGestureNavigation {
   }
 
   _onTouchEnd(e) {
+    const touchEndX = e.changedTouches[0].clientX;
     const touchEndY = e.changedTouches[0].clientY;
 
+    const deltaX = touchEndX - this.touchStartX;
     const deltaY = touchEndY - this.touchStartY;
+    const absDeltaX = Math.abs(deltaX);
     const absDeltaY = Math.abs(deltaY);
 
-    // Only trigger if significant vertical swipe
-    if (absDeltaY > this.minSwipeDistance) {
+    // Only trigger if vertical swipe is more dominant than horizontal
+    if (absDeltaY > this.minSwipeDistance && absDeltaY > absDeltaX) {
       const currentIdx = this.getCurrentProjectIndex();
       let nextIdx;
 
