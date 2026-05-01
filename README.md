@@ -2,7 +2,7 @@
 
 A modern, minimalist portfolio website showcasing projects and experiments by Konstantin Zhitkov, a front-end developer from Saint Petersburg, Russia.
 
-**Live site:** https://zhitkov.netlify.app
+**Live site:** https://zhitkovkostya.github.io/portfolio/
 
 ## Overview
 
@@ -136,7 +136,7 @@ Main stylesheet: `main.scss`
 ### Site Settings (`_config.yml`)
 ```yaml
 title: Konstantin Zhitkov Portfolio v1.0
-url: https://zhitkov.netlify.app
+url: https://zhitkovkostya.github.io/portfolio/
 email: zhitkovkostya@gmail.com
 socials:
   GIT: GitHub profile
@@ -181,4 +181,4 @@ Konstantin Zhitkov — [@zhitkovkostya](https://github.com/zhitkovkostya)
 
 - GitHub: https://github.com/zhitkovkostya
 - LinkedIn: https://linkedin.com/in/zhitkovkostya
-- Website: https://zhitkov.netlify.app
+- Website: https://zhitkovkostya.github.io/portfolio/

@@ -3,8 +3,8 @@ backend:
   repo: zhitkovkostya/portfolio
   branch: master
 media_folder: "assets/images"
-site_url: https://zhitkov.netlify.app
-logo_url: https://zhitkov.netlify.app/admin/assets/images/logo-admin.svg
+site_url: https://zhitkovkostya.github.io/portfolio/
+logo_url: https://zhitkovkostya.github.io/portfolio//admin/assets/images/logo-admin.svg
 collections:
   - name: project
     label: Projects
