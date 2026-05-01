@@ -1,9 +1,10 @@
-version: '3'
+version: "3"
 
 services:
   site:
     build: .
-    command: sh -c "bundle install && bundle exec jekyll serve --host 0.0.0.0 --livereload"
+    command: sh -c "bundle install && bundle exec jekyll serve --host 0.0.0.0
+      --baseurl '' --livereload"
     ports:
       - "8080:4000"
       - "35729:35729"
