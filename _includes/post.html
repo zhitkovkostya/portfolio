@@ -27,7 +27,7 @@
 
                     {% for image in include.images %}
                         <div class="swiper-slide js-swiper-slide">
-                            <img src="" data-src="{{ image.url }}" class="image image--lazy" alt="{{ image.title }}" />
+                            <img src="" data-src="{{ image.url | relative_url }}" class="image image--lazy" alt="{{ image.title }}" />
                             <div class="swiper-lazy-preloader"></div>
                         </div>
                     {% endfor %}
