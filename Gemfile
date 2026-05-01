@@ -10,12 +10,6 @@ source "https://rubygems.org"
 # Happy Jekylling!
 gem "jekyll", "~> 4.3"
 
-# If you have any plugins, put them here!
-group :jekyll_plugins do
-  gem "jekyll-autoprefixer", "~> 1.0"
-  gem "autoprefixer-rails", "~> 10.0"
-end
-
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 # and associated library.
 install_if -> { RUBY_PLATFORM =~ %r!mingw|mswin|java! } do
