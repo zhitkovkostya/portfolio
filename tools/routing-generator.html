@@ -1,0 +1,207 @@
+---
+layout: null
+permalink: /tools/routing-generator/
+sitemap: false
+---
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>happ :: routing profile builder</title>
+<link href="{{ '/assets/styles/routing-generator.css' | relative_url }}" rel="stylesheet">
+</head>
+<body>
+<div class="wrap">
+
+  <div class="topbar">
+    <div class="tag">happ // routing profile</div>
+    <div class="sub">generator — JSON + deep link</div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">профиль</div>
+    <div class="section-body">
+      <div class="field">
+        <label>Name</label>
+        <input type="text" id="f_name" value="RU без VPN с AdBlock">
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>DomainStrategy</label>
+          <select id="f_domainstrategy">
+            <option value="AsIs">AsIs</option>
+            <option value="IPIfNonMatch" selected>IPIfNonMatch</option>
+            <option value="IPOnDemand">IPOnDemand</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>RouteOrder</label>
+          <select id="f_routeorder">
+            <option value="block-direct-proxy" selected>block-direct-proxy</option>
+            <option value="block-proxy-direct">block-proxy-direct</option>
+          </select>
+        </div>
+      </div>
+      <div class="toggle-row">
+        <input type="checkbox" id="f_globalproxy" checked>
+        <label for="f_globalproxy">GlobalProxy</label>
+      </div>
+      <div class="toggle-row">
+        <input type="checkbox" id="f_fakedns">
+        <label for="f_fakedns">FakeDns</label>
+      </div>
+      <div class="toggle-row">
+        <input type="checkbox" id="f_usechunkfiles" checked>
+        <label for="f_usechunkfiles">UseChunkFiles</label>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">маршрутизация — сайты <span class="hint">geosite / domain</span></div>
+    <div class="section-body">
+      <div class="field">
+        <label>DirectSites <span class="hint">по одному на строку</span></label>
+        <textarea id="f_directsites">domain:.ru
+domain:.su
+domain:.xn--p1ai
+geosite:category-ru</textarea>
+      </div>
+      <div class="field">
+        <label>ProxySites <span class="hint">через xray, по одному на строку</span></label>
+        <textarea id="f_proxysites"></textarea>
+      </div>
+      <div class="field">
+        <label>BlockSites</label>
+        <textarea id="f_blocksites">geosite:CATEGORY-ADS</textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">маршрутизация — IP / CIDR</div>
+    <div class="section-body">
+      <div class="field">
+        <label>DirectIp <span class="hint">по одному на строку</span></label>
+        <textarea id="f_directip">10.0.0.0/8
+172.16.0.0/12
+192.168.0.0/16
+169.254.0.0/16
+224.0.0.0/4
+255.255.255.255</textarea>
+      </div>
+      <div class="field">
+        <label>ProxyIp</label>
+        <textarea id="f_proxyip"></textarea>
+      </div>
+      <div class="field">
+        <label>BlockIp</label>
+        <textarea id="f_blockip"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">DNS</div>
+    <div class="section-body">
+      <div class="row3">
+        <div class="field">
+          <label>DomesticDNSType</label>
+          <select id="f_domestic_dns_type">
+            <option value="DoH" selected>DoH</option>
+            <option value="UDP">UDP</option>
+            <option value="TCP">TCP</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>DomesticDNSDomain</label>
+          <input type="text" id="f_domestic_dns_domain" value="https://dns.google/dns-query">
+        </div>
+        <div class="field">
+          <label>DomesticDNSIp</label>
+          <input type="text" id="f_domestic_dns_ip" value="8.8.8.8">
+        </div>
+      </div>
+      <div class="row3">
+        <div class="field">
+          <label>RemoteDNSType</label>
+          <select id="f_remote_dns_type">
+            <option value="DoH" selected>DoH</option>
+            <option value="UDP">UDP</option>
+            <option value="TCP">TCP</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>RemoteDNSDomain</label>
+          <input type="text" id="f_remote_dns_domain" value="https://cloudflare-dns.com/dns-query">
+        </div>
+        <div class="field">
+          <label>RemoteDNSIp</label>
+          <input type="text" id="f_remote_dns_ip" value="1.1.1.1">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>DnsHosts <span class="hint">переопределения hostname → ip</span></label>
+        <div id="dnshosts_list"></div>
+        <span class="add-link" id="add_dnshost">+ добавить запись</span>
+      </div>
+
+      <div class="row2">
+        <div class="field">
+          <label>GeoipUrl</label>
+          <input type="text" id="f_geoip_url" value="https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geoip.dat">
+        </div>
+        <div class="field">
+          <label>GeositeUrl</label>
+          <input type="text" id="f_geosite_url" value="https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geosite.dat">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="btn-primary" id="generate_btn">сгенерировать профиль</button>
+    <button class="btn-secondary" id="reset_btn">сброс</button>
+  </div>
+
+  <div class="output-block" id="output_block">
+    <div class="section">
+      <div class="section-head">
+        <span>deep link</span>
+        <span class="copied-flag" id="link_copied">скопировано</span>
+      </div>
+      <div class="section-body">
+        <div class="deeplink-box" id="deeplink_text"></div>
+        <div class="copy-row">
+          <button class="btn-secondary" id="copy_link_btn" style="flex:1">скопировать ссылку</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-head">
+        <span>JSON</span>
+        <span class="copied-flag" id="json_copied">скопировано</span>
+      </div>
+      <div class="section-body">
+        <pre class="json-out" id="json_text"></pre>
+        <div class="copy-row" style="margin-top:10px;">
+          <button class="btn-secondary" id="copy_json_btn" style="flex:1">скопировать JSON</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footnote">
+    Профиль кодируется в base64(JSON) и подставляется в happ://routing/add/&lt;base64&gt;.<br>
+    Поля DirectSites/ProxySites/BlockSites принимают значения вида domain:.example, geosite:name, geoip:name, ip-маски.<br>
+    Пустые списки сериализуются как [].
+  </div>
+
+</div>
+
+<script src="{{ '/assets/scripts/routing-generator.js' | relative_url }}"></script>
+</body>
+</html>
